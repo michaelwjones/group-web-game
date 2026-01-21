@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: group-web-game-server
+    runtime: node
+    plan: free
+    buildCommand: pnpm install && pnpm --filter @game/shared build && pnpm --filter @game/trivia build && pnpm --filter @game/server build
+    startCommand: pnpm --filter @game/server start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: HOST
+        value: 0.0.0.0
