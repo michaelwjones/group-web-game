@@ -1,6 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
+    import { base } from '$app/paths';
     import {
         gameStore,
         gameStatus,
@@ -26,7 +27,7 @@
 
     // Redirect if not a player
     $: if ($gameStore.isDisplay || $gameStore.viewMode === 'home') {
-        goto('/');
+        goto(`${base}/`);
     }
 
     $: isLastRound = playerState

@@ -1,5 +1,6 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
+    import { base } from '$app/paths';
     import { gameStore, createGame, joinGame, joinAsDisplay } from '$lib/stores/game';
     import { lastError } from '$lib/stores/connection';
 
@@ -8,11 +9,11 @@
     let mode: 'menu' | 'join' | 'display' = 'menu';
 
     $: if ($gameStore.viewMode === 'display' && $gameStore.gameCode) {
-        goto(`/display/${$gameStore.gameCode}`);
+        goto(`${base}/display/${$gameStore.gameCode}`);
     }
 
     $: if ($gameStore.viewMode === 'player' && $gameStore.gameCode) {
-        goto(`/play/${$gameStore.gameCode}`);
+        goto(`${base}/play/${$gameStore.gameCode}`);
     }
 
     function handleCreateGame() {
