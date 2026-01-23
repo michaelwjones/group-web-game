@@ -83,11 +83,10 @@ let client: WebSocketClient | null = null;
 function handleMessage(message: ServerToClientMessage): void {
     switch (message.type) {
         case 'game:created':
+            // Just store the game code; viewMode will be set by display:joined or game:joined
             gameStore.update((s) => ({
                 ...s,
-                gameCode: message.code,
-                viewMode: 'display',
-                isDisplay: true
+                gameCode: message.code
             }));
             break;
 
@@ -229,9 +228,9 @@ export function initializeGame(): void {
     }
 }
 
-export function createGame(gameType: string): void {
+export function createGame(gameType: string, playerName?: string): void {
     lastError.set(null);
-    send({ type: 'game:create', gameType });
+    send({ type: 'game:create', gameType, playerName });
 }
 
 export function joinGame(code: string, playerName: string): void {

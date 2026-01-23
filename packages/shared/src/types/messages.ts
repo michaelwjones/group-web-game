@@ -9,6 +9,7 @@ export interface C2S_GameCreate {
     type: 'game:create';
     gameType: string;
     config?: Record<string, unknown>;
+    playerName?: string; // If provided, creator joins as player/host instead of display
 }
 
 export interface C2S_GameJoin {

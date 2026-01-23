@@ -59,7 +59,7 @@ export function handleConnection(ws: WebSocket): void {
 function handleMessage(ws: WebSocket, message: ClientToServerMessage): void {
     switch (message.type) {
         case 'game:create':
-            handleGameCreate(ws, message.gameType, message.config);
+            handleGameCreate(ws, message.gameType, message.config, message.playerName);
             break;
         case 'game:join':
             handleGameJoin(ws, message.code, message.playerName);
@@ -94,7 +94,8 @@ function handleMessage(ws: WebSocket, message: ClientToServerMessage): void {
 function handleGameCreate(
     ws: WebSocket,
     gameType: string,
-    config?: Record<string, unknown>
+    config?: Record<string, unknown>,
+    playerName?: string
 ): void {
     const game = gameManager.createGame(gameType, config as any);
     if (!game) {
@@ -103,20 +104,46 @@ function handleGameCreate(
     }
 
     const code = game.getCode();
-    game.setDisplayConnection(createConnectionInfo());
-    registry.setDisplay(ws, code);
 
-    send(ws, {
-        type: 'game:created',
-        code,
-        gameType
-    });
+    // If playerName is provided, creator joins as player/host instead of display
+    if (playerName) {
+        const sessionToken = sessionStore.createSession('pending', code);
+        const player = game.addPlayer(playerName, sessionToken);
+        game.setHost(player.id); // Creator is automatically host
 
-    // Send initial state
-    send(ws, {
-        type: 'display:joined',
-        state: filterStateForDisplay(game.getSession())
-    });
+        registry.setPlayer(ws, player.id, code);
+
+        send(ws, {
+            type: 'game:created',
+            code,
+            gameType
+        });
+
+        send(ws, {
+            type: 'game:joined',
+            sessionToken,
+            playerId: player.id,
+            state: filterStateForPlayer(game.getSession(), player)
+        });
+
+        broadcastPlayersUpdate(code);
+    } else {
+        // Creator becomes the display
+        game.setDisplayConnection(createConnectionInfo());
+        registry.setDisplay(ws, code);
+
+        send(ws, {
+            type: 'game:created',
+            code,
+            gameType
+        });
+
+        // Send initial state
+        send(ws, {
+            type: 'display:joined',
+            state: filterStateForDisplay(game.getSession())
+        });
+    }
 }
 
 function handleGameJoin(ws: WebSocket, code: string, playerName: string): void {
