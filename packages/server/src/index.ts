@@ -35,9 +35,8 @@ async function start() {
     });
 
     // Register game plugins
-    // Import trivia plugin - path works in dev (tsx) and after build
-    const triviaModule = await import('../../../games/trivia/server/index.js');
-    gameManager.registerPlugin(triviaModule.triviaPlugin);
+    const { triviaPlugin } = await import('@game/trivia/server');
+    gameManager.registerPlugin(triviaPlugin);
 
     // Cleanup stale games periodically
     setInterval(() => {
