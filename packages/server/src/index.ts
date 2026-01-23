@@ -20,6 +20,18 @@ async function start() {
 
     await fastify.register(websocket);
 
+    // Root endpoint
+    fastify.get('/', async () => {
+        return {
+            name: 'Group Web Game Server',
+            status: 'ok',
+            endpoints: {
+                health: '/health',
+                websocket: '/ws'
+            }
+        };
+    });
+
     // Health check endpoint
     fastify.get('/health', async () => {
         return {
