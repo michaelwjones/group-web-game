@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { gameStore, createGame, joinGame, joinAsDisplay } from '$lib/stores/game';
@@ -7,12 +8,17 @@
     let joinCode = '';
     let playerName = '';
     let mode: 'menu' | 'join' | 'display' = 'menu';
+    let mounted = false;
 
-    $: if ($gameStore.viewMode === 'display' && $gameStore.gameCode) {
+    onMount(() => {
+        mounted = true;
+    });
+
+    $: if (mounted && $gameStore.viewMode === 'display' && $gameStore.gameCode) {
         goto(`${base}/display/${$gameStore.gameCode}`);
     }
 
-    $: if ($gameStore.viewMode === 'player' && $gameStore.gameCode) {
+    $: if (mounted && $gameStore.viewMode === 'player' && $gameStore.gameCode) {
         goto(`${base}/play/${$gameStore.gameCode}`);
     }
 
