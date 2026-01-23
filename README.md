@@ -67,12 +67,15 @@ pnpm dev
 ### Testing the Game
 
 1. Open browser tab 1 → `http://localhost:5173` → Click "New Game"
-2. Open browser tab 2 → Enter join code + name → Join as player
-3. Open browser tab 3 → Enter join code + different name → Join as another player
-4. First player becomes host automatically
-5. Host clicks "Start Game"
-6. Answer trivia questions on player devices
-7. Watch scores update on the display
+2. Choose your role:
+   - **"Be the Display"** - This device shows questions on a shared screen (TV/projector)
+   - **"Be a Player"** - Enter your name and play from this device (no shared screen needed)
+3. Open browser tab 2 → Enter join code + name → Join as player
+4. Open browser tab 3 → Enter join code + different name → Join as another player
+5. The game creator (or first player to join) becomes host automatically
+6. Host clicks "Start Game"
+7. Answer trivia questions on player devices
+8. Watch scores update on the display (or on player devices if no display)
 
 ## Creating a New Game Plugin
 
@@ -93,6 +96,7 @@ interface GamePlugin {
     onAllResponsesReceived(responses, session): RoundEndData;
     calculateScores(results, currentScores, session): NewScores;
     onGameEnd(session): FinalResults;
+    shouldAutoAdvance?(session): boolean; // Optional: auto-advance rounds
 }
 ```
 
@@ -104,13 +108,14 @@ See `games/trivia/` for a complete example.
 
 | Type | Purpose |
 |------|---------|
-| `game:create` | Create new game (becomes display) |
+| `game:create` | Create new game (as display, or as player if name provided) |
 | `game:join` | Join with code + name |
 | `game:join-display` | Join as display device |
 | `session:reconnect` | Reconnect with session token |
 | `host:claim` | Claim host role |
 | `host:start` | Start the game |
 | `host:next-round` | Advance to next round |
+| `host:end-game` | End the game early |
 | `player:response` | Submit round response |
 
 ### Server → Client Messages
@@ -118,12 +123,18 @@ See `games/trivia/` for a complete example.
 | Type | Purpose |
 |------|---------|
 | `game:created` | Game created with join code |
-| `game:joined` | Successfully joined |
+| `game:joined` | Successfully joined as player |
+| `display:joined` | Successfully joined as display |
 | `state:update` | State update |
 | `players:update` | Player list changed |
+| `host:changed` | Host role transferred |
 | `round:start` | New round begins |
 | `round:end` | Round results |
+| `response:received` | Player response acknowledged |
 | `game:end` | Final results |
+| `player:disconnected` | Player disconnected |
+| `player:reconnected` | Player reconnected |
+| `error` | Error response with code and message |
 
 ## Environment Variables
 
