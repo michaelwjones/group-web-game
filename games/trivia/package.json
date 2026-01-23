@@ -2,12 +2,12 @@
   "name": "@game/trivia",
   "version": "1.0.0",
   "type": "module",
-  "main": "./dist/server/index.js",
-  "types": "./dist/server/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     "./server": {
-      "import": "./dist/server/index.js",
-      "types": "./dist/server/index.d.ts"
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     },
     "./client/*": "./client/*"
   },
