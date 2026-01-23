@@ -89,7 +89,7 @@
                     on:click={handleCreateAsHost}
                     disabled={!playerName.trim()}
                 >
-                    Be a Host
+                    Be a Player
                 </button>
                 <p class="text-sm text-gray-500 -mt-2 mb-2">Play from your device, no shared screen</p>
                 <button type="button" class="btn btn-secondary flex-1 w-full mt-4" on:click={resetMode}>
