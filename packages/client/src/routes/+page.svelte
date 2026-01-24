@@ -63,6 +63,10 @@
     }
 </script>
 
+<svelte:head>
+    <title>Group Web Game</title>
+</svelte:head>
+
 <div class="flex items-center justify-center min-h-screen p-4">
     <div class="card max-w-md w-full text-center">
         <h1 class="text-4xl font-bold mb-8 text-primary-400">Group Web Game</h1>
