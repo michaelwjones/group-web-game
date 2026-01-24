@@ -81,14 +81,15 @@
         {:else if mode === 'create'}
             <div class="space-y-4">
                 <p class="text-gray-400 mb-4">How do you want to play?</p>
-                <button class="btn btn-primary btn-lg w-full" on:click={handleCreateAsDisplay}>
-                    Be the Display
-                </button>
-                <p class="text-sm text-gray-500 -mt-2 mb-4">Show the game on a shared screen (TV/projector)</p>
                 <button class="btn btn-primary btn-lg w-full" on:click={handleChoosePlayer}>
                     Be a Player
                 </button>
                 <p class="text-sm text-gray-500 -mt-2 mb-2">Play from your device, no shared screen needed</p>
+                <div class="border-t border-gray-700 my-4"></div>
+                <button class="btn btn-primary btn-lg w-full" on:click={handleCreateAsDisplay}>
+                    This is a Shared Display
+                </button>
+                <p class="text-sm text-gray-500 -mt-2 mb-2">Show the game on a TV or projector</p>
                 <button type="button" class="btn btn-secondary w-full mt-4" on:click={() => (mode = 'select-game')}>
                     Back
                 </button>
