@@ -10,16 +10,16 @@
         selfId,
         privateState
     } from '$lib/stores/game';
+    import { getGameComponents } from '$lib/games/registry';
     import PlayerLobby from '$lib/components/player-device/PlayerLobby.svelte';
     import PlayerRound from '$lib/components/player-device/PlayerRound.svelte';
     import PlayerResults from '$lib/components/player-device/PlayerResults.svelte';
     import PlayerFinal from '$lib/components/player-device/PlayerFinal.svelte';
 
-    // Game-specific input component
-    import TriviaPlayerInput from '@game/trivia/client/PlayerInput.svelte';
-
     $: gameCode = $page.params.gameCode;
     $: playerState = $gameStore.playerState;
+    $: gameType = playerState?.gameType ?? null;
+    $: gameComponents = gameType ? getGameComponents(gameType) : null;
     $: currentRound = $gameStore.currentRound;
     $: roundResults = $gameStore.roundResults;
     $: finalResults = $gameStore.finalResults;
@@ -48,12 +48,12 @@
         selfId={$selfId ?? ''}
         minPlayers={2}
     />
-{:else if $gameStatus === 'in_progress' && currentRound}
+{:else if $gameStatus === 'in_progress' && currentRound && gameComponents}
     <PlayerRound
         round={currentRound}
         {hasResponded}
         totalRounds={playerState?.totalRounds ?? 1}
-        GameInput={TriviaPlayerInput}
+        GameInput={gameComponents.PlayerInput}
         privateState={$privateState}
     />
 {:else if $gameStatus === 'between_rounds' && roundResults}

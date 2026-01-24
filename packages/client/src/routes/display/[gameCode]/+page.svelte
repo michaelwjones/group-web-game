@@ -8,17 +8,16 @@
         players,
         publicState
     } from '$lib/stores/game';
+    import { getGameComponents } from '$lib/games/registry';
     import Lobby from '$lib/components/common-display/Lobby.svelte';
     import RoundDisplay from '$lib/components/common-display/RoundDisplay.svelte';
     import RoundResults from '$lib/components/common-display/RoundResults.svelte';
     import FinalResults from '$lib/components/common-display/FinalResults.svelte';
 
-    // Game-specific display components would be dynamically loaded
-    import TriviaDisplayBoard from '@game/trivia/client/DisplayBoard.svelte';
-    import TriviaResultsDisplay from '@game/trivia/client/ResultsDisplay.svelte';
-
     $: gameCode = $page.params.gameCode;
     $: displayState = $gameStore.displayState;
+    $: gameType = displayState?.gameType ?? null;
+    $: gameComponents = gameType ? getGameComponents(gameType) : null;
     $: currentRound = $gameStore.currentRound;
     $: roundResults = $gameStore.roundResults;
     $: finalResults = $gameStore.finalResults;
@@ -45,24 +44,24 @@
         hostId={displayState?.hostId ?? null}
         minPlayers={2}
     />
-{:else if $gameStatus === 'in_progress' && currentRound}
+{:else if $gameStatus === 'in_progress' && currentRound && gameComponents}
     <RoundDisplay
         round={currentRound}
         players={$players}
         hostId={displayState?.hostId ?? null}
         {respondedPlayers}
         totalRounds={displayState?.totalRounds ?? 1}
-        GameDisplay={TriviaDisplayBoard}
+        GameDisplay={gameComponents.DisplayBoard}
         publicState={$publicState}
     />
-{:else if $gameStatus === 'between_rounds' && roundResults}
+{:else if $gameStatus === 'between_rounds' && roundResults && gameComponents}
     <RoundResults
         results={roundResults}
         players={$players}
         hostId={displayState?.hostId ?? null}
         totalRounds={displayState?.totalRounds ?? 1}
         {isLastRound}
-        ResultsDisplay={TriviaResultsDisplay}
+        ResultsDisplay={gameComponents.ResultsDisplay}
     />
 {:else if $gameStatus === 'ended' && finalResults}
     <FinalResults results={finalResults} />

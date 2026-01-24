@@ -4,10 +4,12 @@
     import { base } from '$app/paths';
     import { gameStore, createGame, joinGame } from '$lib/stores/game';
     import { lastError } from '$lib/stores/connection';
+    import GameSelector from '$lib/components/home/GameSelector.svelte';
 
     let joinCode = '';
     let playerName = '';
-    let mode: 'menu' | 'join' | 'create' = 'menu';
+    let mode: 'menu' | 'select-game' | 'join' | 'create' = 'menu';
+    let selectedGameType = '';
     let mounted = false;
 
     onMount(() => {
@@ -23,17 +25,22 @@
     }
 
     function handleNewGame() {
-        mode = 'create';
+        mode = 'select-game';
         lastError.set(null);
     }
 
+    function handleGameSelected(event: CustomEvent<string>) {
+        selectedGameType = event.detail;
+        mode = 'create';
+    }
+
     function handleCreateAsDisplay() {
-        createGame('trivia');
+        createGame(selectedGameType);
     }
 
     function handleCreateAsHost() {
         if (playerName.trim()) {
-            createGame('trivia', playerName.trim());
+            createGame(selectedGameType, playerName.trim());
         }
     }
 
@@ -45,6 +52,7 @@
 
     function resetMode() {
         mode = 'menu';
+        selectedGameType = '';
         lastError.set(null);
         joinCode = '';
         playerName = '';
@@ -64,6 +72,8 @@
                     Join Game
                 </button>
             </div>
+        {:else if mode === 'select-game'}
+            <GameSelector on:select={handleGameSelected} on:back={resetMode} />
         {:else if mode === 'create'}
             <div class="space-y-4">
                 <p class="text-gray-400 mb-4">How do you want to run this game?</p>
