@@ -8,7 +8,7 @@
 
     let joinCode = '';
     let playerName = '';
-    let mode: 'menu' | 'select-game' | 'join' | 'create' = 'menu';
+    let mode: 'menu' | 'select-game' | 'join' | 'create' | 'enter-name' = 'menu';
     let selectedGameType = '';
     let mounted = false;
 
@@ -38,7 +38,11 @@
         createGame(selectedGameType);
     }
 
-    function handleCreateAsHost() {
+    function handleChoosePlayer() {
+        mode = 'enter-name';
+    }
+
+    function handleCreateAsPlayer() {
         if (playerName.trim()) {
             createGame(selectedGameType, playerName.trim());
         }
@@ -76,35 +80,45 @@
             <GameSelector on:select={handleGameSelected} on:back={resetMode} />
         {:else if mode === 'create'}
             <div class="space-y-4">
-                <p class="text-gray-400 mb-4">How do you want to run this game?</p>
+                <p class="text-gray-400 mb-4">How do you want to play?</p>
                 <button class="btn btn-primary btn-lg w-full" on:click={handleCreateAsDisplay}>
                     Be the Display
                 </button>
-                <p class="text-sm text-gray-500 -mt-2 mb-2">Show questions on a shared screen</p>
-                <div class="border-t border-gray-700 my-4"></div>
+                <p class="text-sm text-gray-500 -mt-2 mb-4">Show the game on a shared screen (TV/projector)</p>
+                <button class="btn btn-primary btn-lg w-full" on:click={handleChoosePlayer}>
+                    Be a Player
+                </button>
+                <p class="text-sm text-gray-500 -mt-2 mb-2">Play from your device, no shared screen needed</p>
+                <button type="button" class="btn btn-secondary w-full mt-4" on:click={() => (mode = 'select-game')}>
+                    Back
+                </button>
+            </div>
+        {:else if mode === 'enter-name'}
+            <div class="space-y-4">
+                <p class="text-gray-400 mb-4">Enter your name to start</p>
                 <div>
-                    <label for="hostName" class="block text-sm text-gray-400 mb-1">Your Name</label>
                     <input
                         id="hostName"
                         type="text"
                         class="input"
                         bind:value={playerName}
                         maxlength="20"
-                        placeholder="Enter your name"
+                        placeholder="Your name"
                         autocomplete="off"
                     />
                 </div>
-                <button
-                    class="btn btn-secondary btn-lg w-full"
-                    on:click={handleCreateAsHost}
-                    disabled={!playerName.trim()}
-                >
-                    Be a Player
-                </button>
-                <p class="text-sm text-gray-500 -mt-2 mb-2">Play from your device, no shared screen</p>
-                <button type="button" class="btn btn-secondary flex-1 w-full mt-4" on:click={resetMode}>
-                    Back
-                </button>
+                <div class="flex gap-2">
+                    <button type="button" class="btn btn-secondary flex-1" on:click={() => (mode = 'create')}>
+                        Back
+                    </button>
+                    <button
+                        class="btn btn-primary flex-1"
+                        on:click={handleCreateAsPlayer}
+                        disabled={!playerName.trim()}
+                    >
+                        Start Game
+                    </button>
+                </div>
             </div>
         {:else if mode === 'join'}
             <form on:submit|preventDefault={handleJoinGame} class="space-y-4">
