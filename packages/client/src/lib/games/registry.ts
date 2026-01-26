@@ -4,6 +4,10 @@ import TriviaPlayerInput from '@game/trivia/client/PlayerInput.svelte';
 import TriviaDisplayBoard from '@game/trivia/client/DisplayBoard.svelte';
 import TriviaResultsDisplay from '@game/trivia/client/ResultsDisplay.svelte';
 
+import BlindArtistsPlayerInput from '@game/blind-artists/client/PlayerInput.svelte';
+import BlindArtistsDisplayBoard from '@game/blind-artists/client/DisplayBoard.svelte';
+import BlindArtistsResultsDisplay from '@game/blind-artists/client/ResultsDisplay.svelte';
+
 const triviaPlugin: GameClientPlugin = {
     id: 'trivia',
     name: 'Trivia',
@@ -18,8 +22,23 @@ const triviaPlugin: GameClientPlugin = {
     }
 };
 
+const blindArtistsPlugin: GameClientPlugin = {
+    id: 'blind-artists',
+    name: 'Blind Artists',
+    description: 'Cooperative painting where players deduce hidden pigments',
+    icon: '🎨',
+    minPlayers: 12,
+    maxPlayers: 20,
+    components: {
+        PlayerInput: BlindArtistsPlayerInput,
+        DisplayBoard: BlindArtistsDisplayBoard,
+        ResultsDisplay: BlindArtistsResultsDisplay
+    }
+};
+
 const gameRegistry = new Map<string, GameClientPlugin>([
-    ['trivia', triviaPlugin]
+    ['trivia', triviaPlugin],
+    ['blind-artists', blindArtistsPlugin]
 ]);
 
 export function getGame(id: string): GameClientPlugin | undefined {
