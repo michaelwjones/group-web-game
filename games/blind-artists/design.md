@@ -1,228 +1,395 @@
-# Blind Artists - Implementation Plan
+# Blind Artists
 
 ## Game Overview
 
-**Blind Artists** is a cooperative game for 12-20 players where everyone is "blind" and trying to paint a picture together. Players have hidden pigments (red, yellow, blue) that no one knows—not even themselves. Through deduction, clues, and coordination, they must paint the correct strokes to match a hidden target.
+**Blind Artists** is a cooperative game for 12 players where everyone is "blind" and trying to paint a picture together. Players don't know what they're painting - the image emerges from their collective contributions, like impressionism. Through deduction, clues, and coordination, they must paint the correct colors in the correct slots to match a hidden target that none of them can see.
 
 ---
 
-## Core Mechanics Summary
+## Theme: Scenes
 
-### Pigments & Colors
-- **Player Pigments**: Red, Yellow, Blue (hidden from everyone, including self)
-- **Stroke Colors** (7 total):
-  - Primaries: Red, Yellow, Blue
-  - Secondaries: Purple (R+B), Green (Y+B), Orange (R+Y)
-  - Tertiary: Black (R+Y+B)
+The target painting is always a **scene**. Players contribute colors to zones without knowing the full picture. When they succeed, the scene reveals itself.
 
-### Canvas Structure
-- **Zones**: Player count ÷ 4 (rounded up)
-  - 12 players → 3 zones
-  - 16 players → 4 zones
-  - 20 players → 5 zones
-- **Strokes per zone**: Varies (part of target puzzle, e.g., zone 1 needs 2 strokes, zone 2 needs 1)
+Each element below has a set of valid colors. "Any" means all 6 colors are valid.
 
-### Round Structure
-- **Rounds**: Fixed 5 rounds
-- **Actions**: Simultaneous selection, 1 action per player per round
-- **Each action = 1 stroke** targeting a zone
+---
 
-### Brushes (Core Tools)
-Each player has a brush that determines how many players they select for their stroke:
+### Landscape
 
-| Brush | Selects | Description |
-|-------|---------|-------------|
-| Fine | 1 player | Precise single-player selection |
-| Medium | 2 adjacent | Select two players sitting next to each other |
-| Broad | 3 adjacent | Wide selection of three adjacent players |
+| Zone | Element | Valid Colors |
+|------|---------|--------------|
+| Back | Clear Sky | Blue |
+| Back | Sunset Sky | Orange, Red, Purple |
+| Back | Overcast Sky | Purple, Blue |
+| Mid | Mountains | Purple, Blue, Orange |
+| Mid | Rolling Hills | Green, Yellow |
+| Mid | Autumn Forest | Orange, Red, Yellow |
+| Mid | Lake | Blue, Green |
+| Fore | Grass Field | Green, Yellow |
+| Fore | Autumn Field | Orange, Yellow, Red |
+| Fore | Sandy Beach | Yellow, Orange |
+| Fore | Snowy Ground | Blue, Purple |
+| Focus | Sun | Yellow, Orange |
+| Focus | Moon | Blue, Purple, Yellow |
+| Focus | Tree | Green, Orange, Red, Yellow |
 
-Note: Self-inclusion is determined by constraints, not brush type.
+---
 
-### Constraints (Permanent Restrictions)
-One per player for the entire game:
+### Underwater
 
-| Constraint | Restriction |
-|------------|-------------|
-| Left | Must select only from players to your left |
-| Right | Must select only from players to your right |
-| Neighbors | Must select only from players adjacent to you |
-| Self | Must include yourself as one of your selections (counts toward brush limit) |
+| Zone | Element | Valid Colors |
+|------|---------|--------------|
+| Back | Surface Light | Blue, Yellow, Green |
+| Back | Open Water | Blue, Green, Purple |
+| Mid | Coral Reef | Orange, Red, Purple, Yellow |
+| Mid | Kelp Forest | Green, Yellow |
+| Mid | School of Fish | Any |
+| Fore | Sandy Seafloor | Yellow, Orange |
+| Fore | Seagrass Bed | Green |
+| Fore | Rocky Bottom | Purple, Blue, Orange |
+| Focus | Tropical Fish | Any |
+| Focus | Jellyfish | Purple, Blue, Red |
+| Focus | Treasure Chest | Yellow, Orange |
+| Focus | Sea Turtle | Green, Blue, Yellow |
 
-Examples with Self constraint:
-- Fine + Self = Just your pigment (you're your only selection)
-- Medium + Self = You + 1 adjacent player = 2 pigments
-- Broad + Self = You + 2 adjacent players = 3 pigments
+---
 
-### Information Flow
-- **Canvas visibility**: Hidden—players only learn through clues
-- **Round 1 clues**: Pigment hints (e.g., "Player X is NOT blue", "Two reds are adjacent")
-- **Round 2+ clues**: Decision feedback (e.g., "Your stroke needed more blue", "Zone 2 has too many strokes")
-- **Perfect strokes**: Exact pigment match required; revealed permanently when achieved
+### Space
+
+| Zone | Element | Valid Colors |
+|------|---------|--------------|
+| Back | Deep Space | Blue, Purple |
+| Back | Colorful Nebula | Purple, Red, Orange, Blue, Green |
+| Mid | Distant Galaxy | Purple, Blue, Yellow |
+| Mid | Gas Giant | Orange, Red, Yellow, Purple |
+| Mid | Ice Planet | Blue, Green, Purple |
+| Mid | Rocky Planet | Orange, Red, Yellow |
+| Fore | Asteroid Field | Orange, Yellow, Red |
+| Fore | Alien Terrain | Any |
+| Fore | Crater Surface | Purple, Blue, Orange |
+| Focus | Star | Yellow, Orange, Red |
+| Focus | Moon | Blue, Yellow, Purple |
+| Focus | Comet | Blue, Purple, Green |
+| Focus | Space Station | Any |
+
+---
+
+### Still Life
+
+| Zone | Element | Valid Colors |
+|------|---------|--------------|
+| Back | Painted Wall | Any |
+| Back | Window Light | Yellow, Blue, Orange |
+| Back | Curtain | Any |
+| Mid | Ceramic Vase | Any |
+| Mid | Wooden Bowl | Orange, Yellow, Red |
+| Mid | Glass Bottle | Green, Blue, Purple |
+| Mid | Metal Pot | Blue, Purple, Yellow |
+| Fore | Wooden Table | Orange, Yellow, Red |
+| Fore | Tablecloth | Any |
+| Fore | Stone Counter | Blue, Purple, Orange |
+| Focus | Flower | Any |
+| Focus | Fruit | Red, Yellow, Orange, Green, Purple |
+| Focus | Candle Flame | Yellow, Orange, Red |
+| Focus | Wine Glass | Red, Purple, Yellow |
+
+---
+
+### Fantasy
+
+| Zone | Element | Valid Colors |
+|------|---------|--------------|
+| Back | Mystical Sky | Purple, Blue, Green |
+| Back | Aurora | Green, Purple, Blue, Yellow |
+| Back | Enchanted Sunset | Orange, Purple, Red |
+| Mid | Dark Forest | Green, Purple, Blue |
+| Mid | Crystal Spires | Purple, Blue, Yellow |
+| Mid | Floating Islands | Green, Orange, Yellow |
+| Mid | Castle Silhouette | Purple, Blue |
+| Fore | Magical Meadow | Green, Purple, Blue |
+| Fore | Enchanted Grove | Green, Yellow, Purple |
+| Fore | Volcanic Rock | Red, Orange |
+| Fore | Crystal Cave | Purple, Blue, Yellow |
+| Focus | Dragon | Any |
+| Focus | Magic Orb | Any |
+| Focus | Phoenix | Red, Orange, Yellow |
+| Focus | Unicorn | Any |
+| Focus | Wizard | Any |
+
+---
+
+## The Canvas
+
+### Zones (4 total)
+
+Zones represent **depth layers** in the scene:
+
+| Zone | Concept | What it becomes |
+|------|---------|-----------------|
+| **Back** | Distant/upper | Sky, deep space, backdrop |
+| **Mid** | Middle depth | Horizon, mountains, main subject |
+| **Fore** | Close/lower | Ground, foreground, table |
+| **Focus** | Accent element | Sun, moon, focal object |
+
+### Slots (4 per zone)
+
+Each zone has four slots that define its visual character:
+
+| Slot | Purpose |
+|------|---------|
+| **Primary** | Dominant color of the zone |
+| **Accent** | Secondary color adding interest |
+| **Highlight** | Brightest point in the zone |
+| **Shadow** | Depth and contrast |
+
+### Target Structure (16 requirements)
+
+The client's vision is a complete mapping of colors to slots:
+
+| Zone | Primary | Accent | Highlight | Shadow |
+|------|---------|--------|-----------|--------|
+| Back | ? | ? | ? | ? |
+| Mid | ? | ? | ? | ? |
+| Fore | ? | ? | ? | ? |
+| Focus | ? | ? | ? | ? |
+
+Each `?` is one of the 6 possible colors. Players must deduce and paint the correct colors.
+
+---
+
+## Pigments & Colors
+
+### Player Pigments
+Every player has a hidden pigment: **Red**, **Yellow**, or **Blue**
+- Hidden from everyone, including the player themselves
+- Players are selected by Brushes to contribute their pigment to a mix
+
+### Mixed Colors (6 total)
+When pigments combine:
+
+| Result | Pigments Combined |
+|--------|-------------------|
+| Red | Red alone |
+| Yellow | Yellow alone |
+| Blue | Blue alone |
+| Orange | Red + Yellow |
+| Green | Yellow + Blue |
+| Purple | Red + Blue |
+
+---
+
+## Player Roles (12 Players)
+
+Every player has **two things**:
+1. A **Pigment** (hidden color - they are a resource)
+2. A **Role** (their action type each round)
+
+### Role Distribution
+
+| Role | Count | Action per round |
+|------|-------|------------------|
+| **Fine Brush** | 2 | Select 1 player → creates a primary color |
+| **Thick Brush** | 2 | Select 2 adjacent players → creates primary or secondary |
+| **Painter** | 5 | Select loaded brush + zone + slot → paints 1 stroke |
+| **Liaison** | 3 | Ask the client 1 question → shares feedback |
+
+*If odd number of brushes, the extra is Thick.*
+
+### Role Details
+
+**Brushes (Fine):**
+- Assigned role - cannot choose brush size
+- Select 1 player → creates a primary color (Red, Yellow, or Blue)
+- Can select themselves
+- **Each player can only be selected by one Brush per round**
+- The resulting color is hidden until the brush is used
+
+**Brushes (Thick):**
+- Assigned role - cannot choose brush size
+- Select 2 adjacent players → creates a primary or secondary color
+- Can select themselves (as one of the two)
+- **Each player can only be selected by one Brush per round**
+- The resulting color is hidden until the brush is used
+
+**Painters:**
+- Choose a loaded brush, a zone, and a slot
+- Apply the brush's color to that slot
+- If the slot already has a color, the new stroke **replaces** it
+
+**Liaisons:**
+- Start the game knowing the **scene type** (but not the specific target)
+- Choose what question to ask the client each round
+- Interpret and share feedback with the group
+
+---
+
+## Round Structure
+
+### Simultaneous Choices
+
+All players make their choices at any time during the round. Once everyone has submitted, the round resolves:
+
+**Brushes:**
+- Fine Brushes select 1 player
+- Thick Brushes select 2 adjacent players
+- Loaded brushes are created with the resulting colors
+
+**Painters:**
+- Select a loaded brush, a zone, and a slot
+- The brush's color is applied to that slot
+- New strokes replace existing colors in that slot
+
+**Liaisons:**
+- Choose what question to ask the client
+- Receive and share feedback with the group
+
+**Resolution:**
+- All choices resolve simultaneously
+- Canvas is updated with new strokes
+- Feedback is generated based on results
+
+### Pacing
+
+- 5 strokes per round, 16 slots total
+- Minimum ~4 rounds to fill all slots (if perfectly coordinated)
+- Realistically 5-6 rounds needed to fill and correct mistakes
+- 3 questions per round gives more information flow
+
+---
+
+## The Client
+
+The **client** is a game element (not a player) who has commissioned the painting.
+
+- The client has a vision (the hidden target - 16 color requirements)
+- The client provides feedback through the Liaison
+- Feedback varies: sometimes precise, sometimes impressionistic
+
+### Liaison Question Menu
+
+Liaisons choose from a fixed menu of question types. Each question category has specific options and feedback styles.
+
+#### 1. Zone Check
+Ask about the state of a specific zone.
+
+| Question | Feedback Style |
+|----------|----------------|
+| "How does the **Back** feel?" | Impressionistic: "too cold" / "too warm" / "harmonious" |
+| "How does the **Mid** feel?" | Impressionistic |
+| "How does the **Fore** feel?" | Impressionistic |
+| "How does the **Focus** feel?" | Impressionistic |
+
+#### 2. Slot Check
+Ask about a slot type across all zones.
+
+| Question | Feedback Style |
+|----------|----------------|
+| "How are the **Primaries**?" | Impressionistic: "struggling" / "mostly right" / "perfect" |
+| "How are the **Accents**?" | Impressionistic |
+| "How are the **Highlights**?" | Impressionistic |
+| "How are the **Shadows**?" | Impressionistic |
+
+#### 3. Color Check
+Ask about a specific color's usage.
+
+| Question | Feedback Style |
+|----------|----------------|
+| "How is **Red** being used?" | Mixed: "overused" / "underused" / "misplaced" / "just right" |
+| "How is **Yellow** being used?" | Mixed |
+| "How is **Blue** being used?" | Mixed |
+| "How is **Orange** being used?" | Mixed |
+| "How is **Green** being used?" | Mixed |
+| "How is **Purple** being used?" | Mixed |
+
+#### 4. Comparison
+Ask which of two things is better or worse.
+
+| Question | Feedback Style |
+|----------|----------------|
+| "Which zone is **strongest**?" | Precise: names the zone |
+| "Which zone is **weakest**?" | Precise: names the zone |
+| "Which slot type is **strongest**?" | Precise: names the slot type |
+| "Which slot type is **weakest**?" | Precise: names the slot type |
+
+#### 5. Progress
+Ask about overall completion.
+
+| Question | Feedback Style |
+|----------|----------------|
+| "How many slots are correct?" | Precise: number (e.g., "8 of 16") |
+| "How satisfied is the client?" | Impressionistic: "frustrated" / "hopeful" / "pleased" / "delighted" |
+
+#### 6. Element Reveal
+Ask what element belongs in a zone (reveals concept, not colors).
+
+| Question | Feedback Style |
+|----------|----------------|
+| "What element is in the **Back**?" | Precise: names the element (e.g., "Sunset Sky") |
+| "What element is in the **Mid**?" | Precise: names the element |
+| "What element is in the **Fore**?" | Precise: names the element |
+| "What element is in the **Focus**?" | Precise: names the element |
+
+Client responds with impressionistic feedback. Liaisons interpret and share with the group (room for imprecision).
+
+---
+
+## Information Flow
+
+**What players know:**
+- Their own role (Brush/Painter/Liaison)
+- Liaisons also know the scene type
+- Seating arrangement (who is adjacent - matters for thick brushes)
+- Feedback from the client (via Liaison)
+- What colors have been painted where (visible canvas)
+
+**What players don't know:**
+- Their own pigment
+- Other players' pigments
+- The target painting (specific color requirements)
+- What color a loaded brush contains (until used)
+
+**How deduction works:**
+- Feedback hints at what slots need
+- Painted colors hint at what pigments created them
+- Players deduce pigments from patterns of success/failure
+- Coordination improves as information accumulates
+
+---
+
+## Win Condition
+
+TBD - options to explore:
+- **Binary:** All 16 slots must be correct (exact match)
+- **Scoring:** Points based on how many slots match
+- **Threshold:** Need X of 16 slots correct to "satisfy" the client
+- **Tiered:** Bronze/Silver/Gold based on match percentage
+
+---
+
+## Setup Requirements
+
+**Circular Arrangement:** Players must be arranged in a circle. The game needs to know the physical seating order because Thick Brushes can only select **adjacent** players. Each player has exactly two neighbors (left and right).
+
+---
+
+## Open Questions
+
+### Roles & Rounds
+- Do roles rotate between rounds or stay fixed?
+- Is there a round limit? What triggers game end?
+
+### Resolution & Conflicts
+- What happens if multiple painters target the same slot in one round?
+- What happens if multiple brushes try to select the same player? (Each player can only be selected once, but need conflict resolution)
+
+### Feedback & Information
+- How specific/vague is client feedback? (Categories defined, but exact algorithms needed)
+- When do Liaisons act - their own phase, or during Loading/Painting?
+- How are correct slots indicated? Progressive reveal, or only at end?
 
 ### Win Condition
-- **All required strokes must be perfect** (binary win/lose)
-- Target is progressively revealed as strokes are perfected
+- Which win condition model? (Binary, Scoring, Threshold, or Tiered - see above)
 
-### Client Role (Game Element)
-- The "client" is a thematic game element, not a player
-- Server generates hints each round based on how the canvas compares to target
-- Hints appear on the shared display for someone to read aloud (e.g., "The client says: the top feels too cold...")
-- The target painting remains hidden from all players
-
----
-
-## Implementation Plan
-
-### Files to Create
-
-#### Server-Side (`games/blind-artists/server/`)
-
-**`index.ts`** - Main game plugin implementing `GamePlugin` interface
-- `createInitialState()`: Generate target painting, assign pigments/brushes/constraints, create initial clues
-- `onRoundStart()`: Distribute clues (pigment hints round 1, decision feedback round 2+)
-- `validateResponse()`: Validate player action (zone selection, player targets)
-- `onResponseReceived()`: Track submitted actions
-- `onAllResponsesReceived()`: Resolve all strokes, determine results, generate feedback clues
-- `calculateScores()`: Check for perfect strokes, update revealed target
-
-**`types.ts`** - Game-specific types
-- `Pigment`, `StrokeColor`, `BrushType`, `ConstraintType`
-- `TargetPainting`, `Stroke`, `Zone`, `PlayerAction`
-- Hidden/Public/Private state interfaces
-
-**`target-generator.ts`** - Target painting generation
-- Generate zone requirements based on player count
-- Assign stroke color requirements per zone
-- Ensure target is achievable given pigment distribution
-
-**`clue-generator.ts`** - Clue generation logic
-- Round 1: Pigment-related clues
-- Round 2+: Decision/result feedback clues
-
-**`color-mixer.ts`** - Color combination logic
-- Combine pigments to produce stroke colors (R+B=Purple, etc.)
-- Determine resulting color from player selections
-
-#### Client-Side (`games/blind-artists/client/`)
-
-**`PlayerInput.svelte`** - Player action input
-- Zone selection (dropdown/buttons)
-- Player selection for brush (based on brush type and constraint)
-- Visual indicator of brush type and constraint
-- Seating arrangement visualization
-
-**`DisplayBoard.svelte`** - Shared display during rounds
-- Abstract canvas visualization (zones, not actual colors since hidden)
-- Player list with seating order
-- Round counter, action submission status
-- Current revealed perfect strokes
-
-**`ResultsDisplay.svelte`** - Round results display
-- Newly revealed perfect strokes (if any)
-- Client hint suggestions (for client to read)
-- Private clue distribution indicator
-
-**`ClientHints.svelte`** - Component for displaying the "client's" feedback
-- Server-generated hints displayed on shared screen
-- Thematic framing ("The client says...")
-- Integrated into DisplayBoard between rounds
-
-### Files to Modify
-
-**`packages/server/src/index.ts`**
-- Import and register `blindArtistsPlugin`
-
-**`packages/client/src/lib/games/registry.ts`**
-- Add Blind Artists components to registry
-
-**`packages/shared/src/types/games.ts`** (if exists, or create)
-- Add `'blind-artists'` to game type union
-
-### State Structure
-
-```typescript
-// Hidden State (server only)
-interface BlindArtistsHidden {
-  target: TargetPainting;           // Full target requirements
-  playerPigments: Map<string, Pigment>;  // Each player's hidden pigment
-  canvas: Map<ZoneId, Stroke[]>;    // Current painted strokes
-  perfectStrokes: PerfectStroke[];  // Revealed perfect strokes
-  pendingClues: Map<string, Clue[]>; // Clues to distribute
-}
-
-// Public State (visible to all)
-interface BlindArtistsPublic {
-  zones: number;                    // Number of zones
-  revealedStrokes: RevealedStroke[]; // Perfect strokes (visible to all)
-  strokesSubmitted: number;         // How many actions received this round
-  round: number;
-}
-
-// Player Private State (per-player)
-interface BlindArtistsPrivate {
-  brush: BrushType;
-  constraint: ConstraintType;
-  seatPosition: number;            // For adjacency calculations
-  clues: Clue[];                   // This player's received clues
-}
-```
-
-### Player Action Format
-
-```typescript
-interface PlayerAction {
-  zone: number;                    // Which zone to paint
-  selectedPlayers: string[];       // Player IDs whose pigments to use
-}
-```
-
----
-
-## Implementation Order
-
-1. **Shared types** - Define all game types in `games/blind-artists/server/types.ts`
-2. **Color mixer** - Implement pigment combination logic
-3. **Target generator** - Create target painting generation
-4. **Clue generator** - Implement clue generation for both phases
-5. **Server plugin** - Main game logic with all hooks
-6. **Player input UI** - Zone and player selection interface
-7. **Display board UI** - Shared display for rounds
-8. **Results display UI** - Round results visualization
-9. **Client hints UI** - Hint display component
-10. **Registration** - Register game in server and client
-
----
-
-## Verification Plan
-
-### Manual Testing
-1. Start server and client: `pnpm dev`
-2. Create a Blind Artists game
-3. Join with 12+ players (can use multiple browser tabs/windows)
-4. Open shared display view (shows client hints between rounds)
-5. Play through 5 rounds:
-   - Verify pigment assignment is hidden
-   - Verify brushes/constraints are correctly assigned and visible to player
-   - Verify clue distribution (round 1 vs round 2+)
-   - Verify stroke resolution and color mixing
-   - Verify perfect stroke detection and reveal
-   - Verify "client" hints appear on display between rounds
-6. Test win condition (all perfect strokes)
-7. Test with different player counts (12, 16, 20)
-
-### Edge Cases to Test
-- Player disconnection/reconnection mid-game
-- Constraint violations (selecting invalid players)
-- Zone overflow (more strokes than needed)
-- Adjacency edge cases (wrap-around seating?)
-
----
-
-## Open Questions for Future Iterations
-
-1. **Balance**: Are 5 rounds enough to deduce and paint correctly?
-2. **Difficulty scaling**: Should target complexity scale with player count?
-3. **Clue variety**: Expand clue types based on playtesting
-4. **Tool balance**: Adjust brushes/constraints after testing
-5. **Hint quality**: How specific/cryptic should the server-generated hints be?
-6. **Modifiers**: Consider adding specialty effects in future versions if more complexity desired
+### Target Generation
+- How is the target painting created? Random element per zone from scene type? Curated combinations?
+- Are certain element combinations invalid or always valid within a scene type?
