@@ -2,13 +2,13 @@
 
 ## Game Overview
 
-**Blind Artists** is a cooperative game for 12 players where everyone is "blind" and trying to paint a picture together. Players don't know what they're painting - the image emerges from their collective contributions, like impressionism. Through deduction, clues, and coordination, they must paint the correct colors in the correct slots to match a hidden target that none of them can see.
+Blind Artists is a cooperative game for 12 players where everyone is "blind" and trying to paint a picture together. Players don't know what they're painting - the image emerges from their collective contributions, like impressionism. Through deduction, clues, and coordination, they must paint the correct colors in the correct slots to match a hidden target that none of them can see.
 
 ---
 
 ## Theme: Scenes
 
-The target painting is always a **scene**. Players contribute colors to zones without knowing the full picture. When they succeed, the scene reveals itself.
+The target painting is always a scene. Players contribute colors to zones without knowing the full picture. When they succeed, the scene reveals itself.
 
 Each element below has a set of valid colors. "Any" means all 6 colors are valid.
 
@@ -122,14 +122,14 @@ Each element below has a set of valid colors. "Any" means all 6 colors are valid
 
 ### Zones (4 total)
 
-Zones represent **depth layers** in the scene:
+Zones represent depth layers in the scene:
 
 | Zone | Concept | What it becomes |
 |------|---------|-----------------|
-| **Back** | Distant/upper | Sky, deep space, backdrop |
-| **Mid** | Middle depth | Horizon, mountains, main subject |
-| **Fore** | Close/lower | Ground, foreground, table |
-| **Focus** | Accent element | Sun, moon, focal object |
+| Back | Distant/upper | Sky, deep space, backdrop |
+| Mid | Middle depth | Horizon, mountains, main subject |
+| Fore | Close/lower | Ground, foreground, table |
+| Focus | Accent element | Sun, moon, focal object |
 
 ### Slots (4 per zone)
 
@@ -137,10 +137,10 @@ Each zone has four slots that define its visual character:
 
 | Slot | Purpose |
 |------|---------|
-| **Primary** | Dominant color of the zone |
-| **Accent** | Secondary color adding interest |
-| **Highlight** | Brightest point in the zone |
-| **Shadow** | Depth and contrast |
+| Primary | Dominant color of the zone |
+| Accent | Secondary color adding interest |
+| Highlight | Brightest point in the zone |
+| Shadow | Depth and contrast |
 
 ### Target Structure (16 requirements)
 
@@ -160,17 +160,17 @@ Each `?` is one of the 6 possible colors. Players must deduce and paint the corr
 ## Pigments & Colors
 
 ### Player Pigments
-Every player has a hidden pigment: **Red**, **Yellow**, or **Blue**
+Every player has a hidden pigment: Red, Yellow, or Blue
 - Hidden from everyone, including the player themselves
 - Players are selected by Brushes to contribute their pigment to a mix
-- **Each player can only be selected 4 times total across the entire game**
+- Each player can only be selected 4 times total across the entire game
 - Once a player has been selected 4 times, they cannot be chosen by any Brush
 - Remaining uses per player must be visible in the UI (shown to all players when relevant)
 
 ### Pigment Self-Assessment
 Players can mark what pigment they believe they are:
-- **Unknown** (default) — player hasn't deduced their pigment yet
-- **Red**, **Yellow**, or **Blue** — player's current guess
+- Unknown (default) — player hasn't deduced their pigment yet
+- Red, Yellow, or Blue — player's current guess
 
 This is optional and can be changed at any time. Visible to all players to aid coordination.
 
@@ -178,7 +178,7 @@ This is optional and can be changed at any time. Visible to all players to aid c
 
 At the start of the game, each player receives one clue about pigment distribution. Clues are intentionally vague — they provide a starting point for deduction but never certainty. Players must use brush strokes to confirm their theories.
 
-**Design principle:** No combination of starting clues should allow players to deduce anyone's exact pigment. Clues narrow possibilities; strokes confirm them.
+Design principle: No combination of starting clues should allow players to deduce anyone's exact pigment. Clues narrow possibilities; strokes confirm them.
 
 #### Neighbor Clues
 
@@ -232,44 +232,44 @@ When pigments combine:
 
 ## Player Roles (12 Players)
 
-Every player has **two things**:
-1. A **Pigment** (hidden color - they are a resource)
-2. A **Role** (their action type each round)
+Every player has two things:
+1. A Pigment (hidden color - they are a resource)
+2. A Role (their action type each round)
 
 ### Role Distribution
 
 | Role | Count | Action per round |
 |------|-------|------------------|
-| **Fine Brush** | 2 | Select 1 player → creates a primary color |
-| **Thick Brush** | 2 | Select 2 adjacent players → creates primary or secondary |
-| **Painter** | 5 | Select loaded brush + zone + slot → paints 1 stroke |
-| **Liaison** | 3 | Ask the client 1 question → shares feedback |
+| Fine Brush | 2 | Select 1 player → creates a primary color |
+| Thick Brush | 2 | Select 2 adjacent players → creates primary or secondary |
+| Painter | 5 | Select loaded brush + zone + slot → paints 1 stroke |
+| Liaison | 3 | Ask the client 1 question → shares feedback |
 
 *If odd number of brushes, the extra is Thick.*
 
 ### Role Details
 
-**Brushes (Fine):**
+Brushes (Fine):
 - Assigned role - cannot choose brush size
 - Select 1 player → creates a primary color (Red, Yellow, or Blue)
 - Can select themselves
-- **Each player can only be selected by one Brush per round**
+- Each player can only be selected by one Brush per round
 - The resulting color is hidden until the brush is used
 
-**Brushes (Thick):**
+Brushes (Thick):
 - Assigned role - cannot choose brush size
 - Select 2 adjacent players → creates a primary or secondary color
 - Can select themselves (as one of the two)
-- **Each player can only be selected by one Brush per round**
+- Each player can only be selected by one Brush per round
 - The resulting color is hidden until the brush is used
 
-**Painters:**
+Painters:
 - Choose a loaded brush, a zone, and a slot
 - Apply the brush's color to that slot
-- If the slot already has a color, the new stroke **replaces** it
+- If the slot already has a color, the new stroke replaces it
 
-**Liaisons:**
-- Start the game knowing the **scene type** (but not the specific target)
+Liaisons:
+- Start the game knowing the scene type (but not the specific target)
 - Choose what question to ask the client each round
 - Interpret and share feedback with the group
 
@@ -281,28 +281,28 @@ Every player has **two things**:
 
 All players make their choices at any time during the round. Once everyone has submitted, the round resolves:
 
-**Brushes:**
+Brushes:
 - Fine Brushes select 1 player
 - Thick Brushes select 2 adjacent players
 - Loaded brushes are created with the resulting colors
 
-**Painters:**
+Painters:
 - Select a loaded brush, a zone, and a slot
 - The brush's color is applied to that slot
 - New strokes replace existing colors in that slot
 
-**Liaisons:**
+Liaisons:
 - Choose what question to ask the client
 - Receive and share feedback with the group
 
-**Resolution:**
+Resolution:
 - All choices resolve simultaneously
 - Canvas is updated with new strokes
 - Feedback is generated based on results
 
 ### Pacing
 
-- **The game lasts exactly 5 rounds**
+- The game lasts exactly 5 rounds
 - 5 strokes per round (25 total), 16 slots to fill
 - Allows time to fill all slots plus correct some mistakes
 - 3 questions per round (15 total) provides steady information flow
@@ -311,7 +311,7 @@ All players make their choices at any time during the round. Once everyone has s
 
 ## The Client
 
-The **client** is a game element (not a player) who has commissioned the painting.
+The client is a game element (not a player) who has commissioned the painting.
 
 - The client has a vision (the hidden target - 16 color requirements)
 - The client provides feedback through the Liaison
@@ -326,42 +326,42 @@ Ask about the state of a specific zone.
 
 | Question | Feedback Style |
 |----------|----------------|
-| "How does the **Back** feel?" | Impressionistic: "too cold" / "too warm" / "harmonious" |
-| "How does the **Mid** feel?" | Impressionistic |
-| "How does the **Fore** feel?" | Impressionistic |
-| "How does the **Focus** feel?" | Impressionistic |
+| "How does the Back feel?" | Impressionistic: "too cold" / "too warm" / "harmonious" |
+| "How does the Mid feel?" | Impressionistic |
+| "How does the Fore feel?" | Impressionistic |
+| "How does the Focus feel?" | Impressionistic |
 
 #### 2. Slot Check
 Ask about a slot type across all zones.
 
 | Question | Feedback Style |
 |----------|----------------|
-| "How are the **Primaries**?" | Impressionistic: "struggling" / "mostly right" / "perfect" |
-| "How are the **Accents**?" | Impressionistic |
-| "How are the **Highlights**?" | Impressionistic |
-| "How are the **Shadows**?" | Impressionistic |
+| "How are the Primaries?" | Impressionistic: "struggling" / "mostly right" / "perfect" |
+| "How are the Accents?" | Impressionistic |
+| "How are the Highlights?" | Impressionistic |
+| "How are the Shadows?" | Impressionistic |
 
 #### 3. Color Check
 Ask about a specific color's usage.
 
 | Question | Feedback Style |
 |----------|----------------|
-| "How is **Red** being used?" | Mixed: "overused" / "underused" / "misplaced" / "just right" |
-| "How is **Yellow** being used?" | Mixed |
-| "How is **Blue** being used?" | Mixed |
-| "How is **Orange** being used?" | Mixed |
-| "How is **Green** being used?" | Mixed |
-| "How is **Purple** being used?" | Mixed |
+| "How is Red being used?" | Mixed: "overused" / "underused" / "misplaced" / "just right" |
+| "How is Yellow being used?" | Mixed |
+| "How is Blue being used?" | Mixed |
+| "How is Orange being used?" | Mixed |
+| "How is Green being used?" | Mixed |
+| "How is Purple being used?" | Mixed |
 
 #### 4. Comparison
 Ask which of two things is better or worse.
 
 | Question | Feedback Style |
 |----------|----------------|
-| "Which zone is **strongest**?" | Precise: names the zone |
-| "Which zone is **weakest**?" | Precise: names the zone |
-| "Which slot type is **strongest**?" | Precise: names the slot type |
-| "Which slot type is **weakest**?" | Precise: names the slot type |
+| "Which zone is strongest?" | Precise: names the zone |
+| "Which zone is weakest?" | Precise: names the zone |
+| "Which slot type is strongest?" | Precise: names the slot type |
+| "Which slot type is weakest?" | Precise: names the slot type |
 
 #### 5. Progress
 Ask about overall completion.
@@ -376,10 +376,10 @@ Ask what element belongs in a zone (reveals concept, not colors).
 
 | Question | Feedback Style |
 |----------|----------------|
-| "What element is in the **Back**?" | Precise: names the element (e.g., "Sunset Sky") |
-| "What element is in the **Mid**?" | Precise: names the element |
-| "What element is in the **Fore**?" | Precise: names the element |
-| "What element is in the **Focus**?" | Precise: names the element |
+| "What element is in the Back?" | Precise: names the element (e.g., "Sunset Sky") |
+| "What element is in the Mid?" | Precise: names the element |
+| "What element is in the Fore?" | Precise: names the element |
+| "What element is in the Focus?" | Precise: names the element |
 
 Client responds with impressionistic feedback. Liaisons interpret and share with the group (room for imprecision).
 
@@ -387,20 +387,20 @@ Client responds with impressionistic feedback. Liaisons interpret and share with
 
 ## Information Flow
 
-**What players know:**
+What players know:
 - Their own role (Brush/Painter/Liaison)
 - Liaisons also know the scene type
 - Seating arrangement (who is adjacent - matters for thick brushes)
 - Feedback from the client (via Liaison)
 - What colors have been painted where (visible canvas)
 
-**What players don't know:**
+What players don't know:
 - Their own pigment
 - Other players' pigments
 - The target painting (specific color requirements)
 - What color a loaded brush contains (until used)
 
-**How deduction works:**
+How deduction works:
 - Feedback hints at what slots need
 - Painted colors hint at what pigments created them
 - Players deduce pigments from patterns of success/failure
@@ -411,16 +411,16 @@ Client responds with impressionistic feedback. Liaisons interpret and share with
 ## Win Condition
 
 TBD - options to explore:
-- **Binary:** All 16 slots must be correct (exact match)
-- **Scoring:** Points based on how many slots match
-- **Threshold:** Need X of 16 slots correct to "satisfy" the client
-- **Tiered:** Bronze/Silver/Gold based on match percentage
+- Binary: All 16 slots must be correct (exact match)
+- Scoring: Points based on how many slots match
+- Threshold: Need X of 16 slots correct to "satisfy" the client
+- Tiered: Bronze/Silver/Gold based on match percentage
 
 ---
 
 ## Setup Requirements
 
-**Circular Arrangement:** Players must be arranged in a circle. The game needs to know the physical seating order because Thick Brushes can only select **adjacent** players. Each player has exactly two neighbors (left and right).
+Circular Arrangement: Players must be arranged in a circle. The game needs to know the physical seating order because Thick Brushes can only select adjacent players. Each player has exactly two neighbors (left and right).
 
 ---
 
