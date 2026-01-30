@@ -163,6 +163,58 @@ Each `?` is one of the 6 possible colors. Players must deduce and paint the corr
 Every player has a hidden pigment: **Red**, **Yellow**, or **Blue**
 - Hidden from everyone, including the player themselves
 - Players are selected by Brushes to contribute their pigment to a mix
+- **Each player can only be selected 4 times total across the entire game**
+- Once a player has been selected 4 times, they cannot be chosen by any Brush
+- Remaining uses per player must be visible in the UI (shown to all players when relevant)
+
+### Pigment Self-Assessment
+Players can mark what pigment they believe they are:
+- **Unknown** (default) — player hasn't deduced their pigment yet
+- **Red**, **Yellow**, or **Blue** — player's current guess
+
+This is optional and can be changed at any time. Visible to all players to aid coordination.
+
+### Starting Clues
+
+At the start of the game, each player receives one clue about pigment distribution. Clues are intentionally vague — they provide a starting point for deduction but never certainty. Players must use brush strokes to confirm their theories.
+
+**Design principle:** No combination of starting clues should allow players to deduce anyone's exact pigment. Clues narrow possibilities; strokes confirm them.
+
+#### Neighbor Clues
+
+| Format | Example |
+|--------|---------|
+| One of your neighbors is [color] | "One of your neighbors is Yellow" |
+| Neither of your neighbors is [color] | "Neither of your neighbors is Blue" |
+| Your two neighbors are not both [color] | "Your two neighbors are not both Red" |
+
+#### Distance Clues
+
+| Format | Example |
+|--------|---------|
+| Someone within 2 seats of you is [color] | "Someone within 2 seats of you is Blue" |
+| No one within 2 seats of you is [color] | "No one within 2 seats of you is Yellow" |
+
+#### Exclusion Clues
+
+| Format | Example |
+|--------|---------|
+| [X] is not [color] | "Alice is not Yellow" |
+| [X] and [Y] are not both [color] | "Alice and Bob are not both Red" |
+
+#### Color Potential Clues (about 3 players)
+
+| Format | Example | Meaning |
+|--------|---------|---------|
+| [X], [Y], and [Z] can make [secondary] | "Alice, Bob, and Carol can make Purple" | At least one Red and one Blue among them |
+| [X], [Y], and [Z] cannot make [secondary] | "Alice, Bob, and Carol cannot make Green" | Missing at least one Yellow or one Blue |
+
+#### Presence Clues (about 3-4 players)
+
+| Format | Example |
+|--------|---------|
+| At least one of [X], [Y], [Z] is [color] | "At least one of Alice, Bob, Carol is Red" |
+| Among [W], [X], [Y], [Z], at least two are [color] | "Among Alice, Bob, Carol, Dan, at least two are Blue" |
 
 ### Mixed Colors (6 total)
 When pigments combine:
@@ -250,10 +302,10 @@ All players make their choices at any time during the round. Once everyone has s
 
 ### Pacing
 
-- 5 strokes per round, 16 slots total
-- Minimum ~4 rounds to fill all slots (if perfectly coordinated)
-- Realistically 5-6 rounds needed to fill and correct mistakes
-- 3 questions per round gives more information flow
+- **The game lasts exactly 5 rounds**
+- 5 strokes per round (25 total), 16 slots to fill
+- Allows time to fill all slots plus correct some mistakes
+- 3 questions per round (15 total) provides steady information flow
 
 ---
 
@@ -376,7 +428,6 @@ TBD - options to explore:
 
 ### Roles & Rounds
 - Do roles rotate between rounds or stay fixed?
-- Is there a round limit? What triggers game end?
 
 ### Resolution & Conflicts
 - What happens if multiple painters target the same slot in one round?
