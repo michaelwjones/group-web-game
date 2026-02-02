@@ -10,111 +10,39 @@ Blind Artists is a cooperative game for 12 players where everyone is "blind" and
 
 The target painting is always a scene. Players contribute colors to zones without knowing the full picture. When they succeed, the scene reveals itself.
 
-Each element below has a set of valid colors. "Any" means all 6 colors are valid.
+Each element below has valid colors for Primary and Secondary slots. Highlight and Shadow are always "Any" (all 6 colors valid).
 
 ---
 
 ### Landscape
 
-| Zone | Element | Valid Colors |
-|------|---------|--------------|
-| Back | Clear Sky | Blue |
-| Back | Sunset Sky | Orange, Red, Purple |
-| Back | Overcast Sky | Purple, Blue |
-| Mid | Mountains | Purple, Blue, Orange |
-| Mid | Rolling Hills | Green, Yellow |
-| Mid | Autumn Forest | Orange, Red, Yellow |
-| Mid | Lake | Blue, Green |
-| Fore | Grass Field | Green, Yellow |
-| Fore | Autumn Field | Orange, Yellow, Red |
-| Fore | Sandy Beach | Yellow, Orange |
-| Fore | Snowy Ground | Blue, Purple |
-| Focus | Sun | Yellow, Orange |
-| Focus | Moon | Blue, Purple, Yellow |
-| Focus | Tree | Green, Orange, Red, Yellow |
+**Back:**
+| Element | Primary | Secondary |
+|---------|---------|-----------|
+| Aurora | Green, Purple | Green, Purple, Blue, Yellow |
+| Sunset | Orange, Red | Orange, Red, Purple, Yellow |
+| Storm Front | Purple, Blue | Purple, Blue, Green, Yellow |
 
----
+**Mid:**
+| Element | Primary | Secondary |
+|---------|---------|-----------|
+| Mountains | Purple, Blue | Purple, Blue, Orange, Green |
+| Forest | Green, Orange | Green, Orange, Yellow, Red |
+| Lake | Blue, Green | Blue, Green, Purple, Yellow |
 
-### Underwater
+**Fore:**
+| Element | Primary | Secondary |
+|---------|---------|-----------|
+| Meadow | Green, Yellow | Green, Yellow, Orange, Purple |
+| Rocky Shore | Blue, Orange | Blue, Orange, Purple, Yellow |
+| Snow Field | Blue, Purple | Blue, Purple, Yellow, Green |
 
-| Zone | Element | Valid Colors |
-|------|---------|--------------|
-| Back | Surface Light | Blue, Yellow, Green |
-| Back | Open Water | Blue, Green, Purple |
-| Mid | Coral Reef | Orange, Red, Purple, Yellow |
-| Mid | Kelp Forest | Green, Yellow |
-| Mid | School of Fish | Any |
-| Fore | Sandy Seafloor | Yellow, Orange |
-| Fore | Seagrass Bed | Green |
-| Fore | Rocky Bottom | Purple, Blue, Orange |
-| Focus | Tropical Fish | Any |
-| Focus | Jellyfish | Purple, Blue, Red |
-| Focus | Treasure Chest | Yellow, Orange |
-| Focus | Sea Turtle | Green, Blue, Yellow |
-
----
-
-### Space
-
-| Zone | Element | Valid Colors |
-|------|---------|--------------|
-| Back | Deep Space | Blue, Purple |
-| Back | Colorful Nebula | Purple, Red, Orange, Blue, Green |
-| Mid | Distant Galaxy | Purple, Blue, Yellow |
-| Mid | Gas Giant | Orange, Red, Yellow, Purple |
-| Mid | Ice Planet | Blue, Green, Purple |
-| Mid | Rocky Planet | Orange, Red, Yellow |
-| Fore | Asteroid Field | Orange, Yellow, Red |
-| Fore | Alien Terrain | Any |
-| Fore | Crater Surface | Purple, Blue, Orange |
-| Focus | Star | Yellow, Orange, Red |
-| Focus | Moon | Blue, Yellow, Purple |
-| Focus | Comet | Blue, Purple, Green |
-| Focus | Space Station | Any |
-
----
-
-### Still Life
-
-| Zone | Element | Valid Colors |
-|------|---------|--------------|
-| Back | Painted Wall | Any |
-| Back | Window Light | Yellow, Blue, Orange |
-| Back | Curtain | Any |
-| Mid | Ceramic Vase | Any |
-| Mid | Wooden Bowl | Orange, Yellow, Red |
-| Mid | Glass Bottle | Green, Blue, Purple |
-| Mid | Metal Pot | Blue, Purple, Yellow |
-| Fore | Wooden Table | Orange, Yellow, Red |
-| Fore | Tablecloth | Any |
-| Fore | Stone Counter | Blue, Purple, Orange |
-| Focus | Flower | Any |
-| Focus | Fruit | Red, Yellow, Orange, Green, Purple |
-| Focus | Candle Flame | Yellow, Orange, Red |
-| Focus | Wine Glass | Red, Purple, Yellow |
-
----
-
-### Fantasy
-
-| Zone | Element | Valid Colors |
-|------|---------|--------------|
-| Back | Mystical Sky | Purple, Blue, Green |
-| Back | Aurora | Green, Purple, Blue, Yellow |
-| Back | Enchanted Sunset | Orange, Purple, Red |
-| Mid | Dark Forest | Green, Purple, Blue |
-| Mid | Crystal Spires | Purple, Blue, Yellow |
-| Mid | Floating Islands | Green, Orange, Yellow |
-| Mid | Castle Silhouette | Purple, Blue |
-| Fore | Magical Meadow | Green, Purple, Blue |
-| Fore | Enchanted Grove | Green, Yellow, Purple |
-| Fore | Volcanic Rock | Red, Orange |
-| Fore | Crystal Cave | Purple, Blue, Yellow |
-| Focus | Dragon | Any |
-| Focus | Magic Orb | Any |
-| Focus | Phoenix | Red, Orange, Yellow |
-| Focus | Unicorn | Any |
-| Focus | Wizard | Any |
+**Focus:**
+| Element | Primary | Secondary |
+|---------|---------|-----------|
+| Lone Tree | Green, Orange | Green, Orange, Red, Yellow, Purple |
+| Windmill | Orange, Red | Orange, Red, Yellow, Purple, Blue |
+| Campfire | Orange, Yellow | Orange, Yellow, Red |
 
 ---
 
@@ -138,7 +66,7 @@ Each zone has four slots that define its visual character:
 | Slot | Purpose |
 |------|---------|
 | Primary | Dominant color of the zone |
-| Accent | Secondary color adding interest |
+| Secondary | Secondary color adding interest |
 | Highlight | Brightest point in the zone |
 | Shadow | Depth and contrast |
 
@@ -146,7 +74,7 @@ Each zone has four slots that define its visual character:
 
 The client's vision is a complete mapping of colors to slots:
 
-| Zone | Primary | Accent | Highlight | Shadow |
+| Zone | Primary | Secondary | Highlight | Shadow |
 |------|---------|--------|-----------|--------|
 | Back | ? | ? | ? | ? |
 | Mid | ? | ? | ? | ? |
@@ -337,7 +265,7 @@ Ask about a slot type across all zones.
 | Question | Feedback Style |
 |----------|----------------|
 | "How are the Primaries?" | Impressionistic: "struggling" / "mostly right" / "perfect" |
-| "How are the Accents?" | Impressionistic |
+| "How are the Secondaries?" | Impressionistic |
 | "How are the Highlights?" | Impressionistic |
 | "How are the Shadows?" | Impressionistic |
 
