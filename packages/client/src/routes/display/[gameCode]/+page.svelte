@@ -8,13 +8,22 @@
         players,
         publicState
     } from '$lib/stores/game';
+    import { postToParent } from '$lib/stores/test-mode';
     import { getGameComponents } from '$lib/games/registry';
     import Lobby from '$lib/components/common-display/Lobby.svelte';
     import RoundDisplay from '$lib/components/common-display/RoundDisplay.svelte';
     import RoundResults from '$lib/components/common-display/RoundResults.svelte';
     import FinalResults from '$lib/components/common-display/FinalResults.svelte';
 
-    $: gameCode = $page.params.gameCode;
+    let joinedPosted = false;
+
+    $: gameCode = $page.params.gameCode ?? '';
+
+    // Post joined message to parent (for test mode)
+    $: if ($gameStore.isDisplay && $gameStore.viewMode === 'display' && !joinedPosted) {
+        joinedPosted = true;
+        postToParent({ type: 'JOINED', clientId: 'display' });
+    }
     $: displayState = $gameStore.displayState;
     $: gameType = displayState?.gameType ?? null;
     $: gameComponents = gameType ? getGameComponents(gameType) : null;

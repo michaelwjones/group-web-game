@@ -4,6 +4,7 @@
     import { base } from '$app/paths';
     import { gameStore, createGame, joinGame } from '$lib/stores/game';
     import { lastError } from '$lib/stores/connection';
+    import { parseTestModeParams, postToParent } from '$lib/stores/test-mode';
     import GameSelector from '$lib/components/home/GameSelector.svelte';
 
     let joinCode = '';
@@ -11,10 +12,32 @@
     let mode: 'menu' | 'select-game' | 'join' | 'create' | 'enter-name' = 'menu';
     let selectedGameType = '';
     let mounted = false;
+    let autoCreateHandled = false;
+    let gameCreatedPosted = false;
 
     onMount(() => {
         mounted = true;
+        const params = parseTestModeParams();
+
+        // Handle auto-create in test mode
+        if (params.autoCreate && params.gameType && !autoCreateHandled) {
+            autoCreateHandled = true;
+            // Small delay to ensure WebSocket is connected
+            setTimeout(() => {
+                if (params.asDisplay) {
+                    createGame(params.gameType!);
+                } else if (params.playerName) {
+                    createGame(params.gameType!, params.playerName);
+                }
+            }, 500);
+        }
     });
+
+    // Post game code to parent when created (for test mode orchestration)
+    $: if (mounted && $gameStore.gameCode && !gameCreatedPosted) {
+        gameCreatedPosted = true;
+        postToParent({ type: 'GAME_CREATED', code: $gameStore.gameCode });
+    }
 
     $: if (mounted && $gameStore.viewMode === 'display' && $gameStore.gameCode) {
         goto(`${base}/display/${$gameStore.gameCode}`);

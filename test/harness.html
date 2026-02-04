@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Test Harness</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 1rem;
+            gap: 1rem;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            color: #8b5cf6;
+        }
+
+        .config-panel {
+            background: #2a2a4a;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+
+        .config-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        label {
+            font-size: 0.75rem;
+            color: #aaa;
+            text-transform: uppercase;
+        }
+
+        input[type="text"], input[type="number"], select {
+            background: #1a1a2e;
+            border: 1px solid #444;
+            border-radius: 0.25rem;
+            padding: 0.5rem;
+            color: #eee;
+            font-size: 0.875rem;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: #8b5cf6;
+        }
+
+        input[type="checkbox"] {
+            width: 1rem;
+            height: 1rem;
+            accent-color: #8b5cf6;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+        }
+
+        .checkbox-group label {
+            text-transform: none;
+            font-size: 0.875rem;
+            color: #eee;
+        }
+
+        button {
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            border-radius: 0.25rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #7c3aed;
+        }
+
+        button:disabled {
+            background: #444;
+            cursor: not-allowed;
+        }
+
+        button.secondary {
+            background: #444;
+        }
+
+        button.secondary:hover {
+            background: #555;
+        }
+
+        button.danger {
+            background: #dc2626;
+        }
+
+        button.danger:hover {
+            background: #b91c1c;
+        }
+
+        .frame-grid {
+            flex: 1;
+            display: grid;
+            gap: 0.5rem;
+            min-height: 0;
+        }
+
+        .frame-wrapper {
+            position: relative;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            border: 2px solid #333;
+            background: #111;
+        }
+
+        .frame-wrapper.display {
+            border-color: #8b5cf6;
+        }
+
+        .frame-label {
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            background: #333;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            z-index: 10;
+        }
+
+        .frame-wrapper.display .frame-label {
+            background: #8b5cf6;
+        }
+
+        .frame-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .status-bar .code {
+            font-family: monospace;
+            background: #333;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            color: #8b5cf6;
+        }
+
+        .status-bar .status {
+            color: #aaa;
+        }
+
+        .status-bar .status.ready {
+            color: #22c55e;
+        }
+
+        .log {
+            background: #111;
+            border-radius: 0.25rem;
+            padding: 0.5rem;
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: #888;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .log .entry {
+            margin-bottom: 0.25rem;
+        }
+
+        .log .entry.success {
+            color: #22c55e;
+        }
+
+        .log .entry.error {
+            color: #ef4444;
+        }
+
+        @media (max-width: 768px) {
+            .config-panel {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .config-group {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Game Test Harness</h1>
+            <div class="status-bar" id="statusBar" style="display: none;">
+                <span>Game: <span class="code" id="currentCode">-</span></span>
+                <span class="status" id="status">Starting...</span>
+                <button class="danger" onclick="reset()">Reset</button>
+                <button class="secondary" onclick="toggleFullscreen()">Fullscreen</button>
+            </div>
+        </div>
+
+        <div id="setupPanel">
+            <div class="config-panel">
+                <div class="config-group">
+                    <label for="gameType">Game</label>
+                    <select id="gameType">
+                        <option value="trivia">Trivia</option>
+                    </select>
+                </div>
+                <div class="config-group">
+                    <label for="playerCount">Players</label>
+                    <input type="number" id="playerCount" value="2" min="1" max="8" style="width: 4rem;">
+                </div>
+                <div class="config-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="includeDisplay" checked>
+                        <label for="includeDisplay">Include Display</label>
+                    </div>
+                </div>
+                <button onclick="startTest()" id="startBtn">Start Test</button>
+            </div>
+        </div>
+
+        <div class="frame-grid" id="frameGrid"></div>
+
+        <div class="log" id="log" style="display: none;"></div>
+    </div>
+
+    <script>
+        const BASE_URL = 'https://michaelwjones.github.io/group-web-game';
+
+        let frames = [];
+        let gameCode = null;
+        let isRunning = false;
+        let pendingPlayers = 0;
+        let joinedCount = 0;
+
+        function log(message, type = '') {
+            const logEl = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = 'entry ' + type;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logEl.appendChild(entry);
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        function updateStatus(text, ready = false) {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = text;
+            statusEl.className = 'status' + (ready ? ' ready' : '');
+        }
+
+        function handleMessage(event) {
+            // Only handle messages from our iframes
+            if (!event.data || typeof event.data.type !== 'string') return;
+
+            const data = event.data;
+            log(`Received: ${data.type}${data.code ? ' code=' + data.code : ''}${data.clientId ? ' client=' + data.clientId : ''}`);
+
+            switch (data.type) {
+                case 'GAME_CREATED':
+                    if (data.code && !gameCode) {
+                        gameCode = data.code;
+                        document.getElementById('currentCode').textContent = gameCode;
+                        log(`Game created with code: ${gameCode}`, 'success');
+                        updateStatus('Spawning players...');
+                        // Small delay then spawn players
+                        setTimeout(spawnPlayers, 500);
+                    }
+                    break;
+
+                case 'JOINED':
+                    joinedCount++;
+                    log(`Client joined: ${data.clientId}`, 'success');
+                    checkAllJoined();
+                    break;
+
+                case 'ERROR':
+                    log(`Error: ${data.message}`, 'error');
+                    break;
+            }
+        }
+
+        function checkAllJoined() {
+            const totalExpected = frames.length;
+            if (joinedCount >= totalExpected) {
+                updateStatus('Ready! Host can start the game.', true);
+            } else {
+                updateStatus(`Joining... (${joinedCount}/${totalExpected})`);
+            }
+        }
+
+        function startTest() {
+            if (isRunning) return;
+
+            const gameType = document.getElementById('gameType').value;
+            const playerCount = parseInt(document.getElementById('playerCount').value) || 2;
+            const includeDisplay = document.getElementById('includeDisplay').checked;
+
+            isRunning = true;
+            gameCode = null;
+            frames = [];
+            joinedCount = 0;
+            pendingPlayers = playerCount;
+
+            // Show UI
+            document.getElementById('setupPanel').style.display = 'none';
+            document.getElementById('statusBar').style.display = 'flex';
+            document.getElementById('log').style.display = 'block';
+            document.getElementById('log').innerHTML = '';
+
+            log('Starting test harness...');
+            updateStatus('Creating game...');
+
+            // Listen for messages from iframes
+            window.addEventListener('message', handleMessage);
+
+            // Create the first frame - this one creates the game
+            if (includeDisplay) {
+                // Display creates the game
+                frames.push({
+                    id: 'display',
+                    label: 'Display',
+                    url: `${BASE_URL}/?autoCreate=true&gameType=${gameType}&asDisplay=true&testMode=true&testClientId=display`,
+                    isDisplay: true
+                });
+                log('Creating display frame (will create game)...');
+            } else {
+                // Player 1 creates the game
+                frames.push({
+                    id: 'p1',
+                    label: 'Player 1',
+                    url: `${BASE_URL}/?autoCreate=true&gameType=${gameType}&playerName=Player1&testMode=true&testClientId=p1`,
+                    isDisplay: false
+                });
+                pendingPlayers--;
+                log('Creating Player 1 frame (will create game)...');
+            }
+
+            renderFrames();
+        }
+
+        function spawnPlayers() {
+            if (!gameCode) {
+                log('No game code yet, waiting...', 'error');
+                return;
+            }
+
+            const includeDisplay = document.getElementById('includeDisplay').checked;
+            const startIndex = includeDisplay ? 1 : 2;
+            const playerCount = parseInt(document.getElementById('playerCount').value) || 2;
+
+            log(`Spawning ${playerCount} player(s)...`);
+
+            for (let i = startIndex; i <= playerCount; i++) {
+                frames.push({
+                    id: `p${i}`,
+                    label: `Player ${i}`,
+                    url: `${BASE_URL}/play/${gameCode}?autoJoin=true&playerName=Player${i}&testMode=true&testClientId=p${i}`,
+                    isDisplay: false
+                });
+                log(`Creating Player ${i} frame...`);
+            }
+
+            renderFrames();
+        }
+
+        function renderFrames() {
+            const grid = document.getElementById('frameGrid');
+
+            if (frames.length === 0) {
+                grid.innerHTML = '';
+                return;
+            }
+
+            // Calculate grid layout
+            const hasDisplay = frames.some(f => f.isDisplay);
+            const playerFrames = frames.filter(f => !f.isDisplay);
+
+            if (hasDisplay && playerFrames.length > 0) {
+                const rows = Math.max(1, Math.ceil(playerFrames.length / 2));
+                grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+                grid.style.gridTemplateColumns = '2fr 1fr 1fr';
+            } else if (hasDisplay) {
+                // Only display, no players yet
+                grid.style.gridTemplateRows = '1fr';
+                grid.style.gridTemplateColumns = '1fr';
+            } else {
+                const cols = Math.ceil(Math.sqrt(frames.length));
+                const rows = Math.ceil(frames.length / cols);
+                grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+                grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            }
+
+            // Build HTML
+            let html = '';
+            frames.forEach((frame) => {
+                const displayClass = frame.isDisplay ? 'display' : '';
+                let style = '';
+
+                if (frame.isDisplay && hasDisplay && playerFrames.length > 0) {
+                    const rows = Math.max(1, Math.ceil(playerFrames.length / 2));
+                    style = `grid-row: 1 / ${rows + 1}; grid-column: 1 / 2;`;
+                }
+
+                html += `
+                    <div class="frame-wrapper ${displayClass}" style="${style}" id="frame-${frame.id}">
+                        <div class="frame-label">${frame.label}</div>
+                        <iframe src="${frame.url}" title="${frame.label}"></iframe>
+                    </div>
+                `;
+            });
+
+            grid.innerHTML = html;
+        }
+
+        function reset() {
+            window.removeEventListener('message', handleMessage);
+            isRunning = false;
+            gameCode = null;
+            frames = [];
+            joinedCount = 0;
+
+            document.getElementById('setupPanel').style.display = 'block';
+            document.getElementById('statusBar').style.display = 'none';
+            document.getElementById('log').style.display = 'none';
+            document.getElementById('frameGrid').innerHTML = '';
+            document.getElementById('currentCode').textContent = '-';
+        }
+
+        function toggleFullscreen() {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                document.documentElement.requestFullscreen();
+            }
+        }
+    </script>
+</body>
+</html>
