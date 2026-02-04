@@ -1,5 +1,4 @@
 import { writable, derived } from 'svelte/store';
-import { getTestClientId } from './test-mode.js';
 
 interface PlayerSession {
     sessionToken: string;
@@ -9,9 +8,20 @@ interface PlayerSession {
 
 const BASE_STORAGE_KEY = 'game_session';
 
+/**
+ * Get the storage key for the current session.
+ * Parses testClientId directly from URL to work at module load time
+ * (before the test-mode store is initialized).
+ */
 function getStorageKey(): string {
-    const testClientId = getTestClientId();
-    return testClientId ? `${BASE_STORAGE_KEY}_${testClientId}` : BASE_STORAGE_KEY;
+    if (typeof window === 'undefined') return BASE_STORAGE_KEY;
+    try {
+        const url = new URL(window.location.href);
+        const testClientId = url.searchParams.get('testClientId');
+        return testClientId ? `${BASE_STORAGE_KEY}_${testClientId}` : BASE_STORAGE_KEY;
+    } catch {
+        return BASE_STORAGE_KEY;
+    }
 }
 
 function loadSession(): PlayerSession | null {

@@ -2,9 +2,10 @@
     import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
-    import { gameStore, createGame, joinGame } from '$lib/stores/game';
+    import { gameStore, createGame, joinGame, leaveGame } from '$lib/stores/game';
     import { lastError } from '$lib/stores/connection';
     import { parseTestModeParams, postToParent } from '$lib/stores/test-mode';
+    import { clearPlayerSession } from '$lib/stores/player';
     import GameSelector from '$lib/components/home/GameSelector.svelte';
 
     let joinCode = '';
@@ -22,14 +23,20 @@
         // Handle auto-create in test mode
         if (params.autoCreate && params.gameType && !autoCreateHandled) {
             autoCreateHandled = true;
-            // Small delay to ensure WebSocket is connected
+
+            // Clear any existing session to start fresh
+            if (params.testMode) {
+                clearPlayerSession();
+            }
+
+            // Longer delay to ensure WebSocket is connected (handles server cold start)
             setTimeout(() => {
                 if (params.asDisplay) {
                     createGame(params.gameType!);
                 } else if (params.playerName) {
                     createGame(params.gameType!, params.playerName);
                 }
-            }, 500);
+            }, 1000);
         }
     });
 

@@ -12,7 +12,8 @@
         privateState,
         joinGame
     } from '$lib/stores/game';
-    import { parseTestModeParams, postToParent } from '$lib/stores/test-mode';
+    import { parseTestModeParams, postToParent, isTestMode } from '$lib/stores/test-mode';
+    import { clearPlayerSession } from '$lib/stores/player';
     import { getGameComponents } from '$lib/games/registry';
     import PlayerLobby from '$lib/components/player-device/PlayerLobby.svelte';
     import PlayerRound from '$lib/components/player-device/PlayerRound.svelte';
@@ -21,6 +22,7 @@
 
     let autoJoinHandled = false;
     let joinedPosted = false;
+    let isAutoJoining = false;
 
     $: gameCode = $page.params.gameCode ?? '';
 
@@ -30,17 +32,25 @@
         // Handle auto-join in test mode
         if (params.autoJoin && params.playerName && !autoJoinHandled) {
             autoJoinHandled = true;
+            isAutoJoining = true;
+
+            // Clear any existing session to start fresh
+            if (params.testMode) {
+                clearPlayerSession();
+            }
+
             const code = $page.params.gameCode ?? '';
-            // Delay to ensure WebSocket is connected
+            // Longer delay to ensure WebSocket is connected
             setTimeout(() => {
                 joinGame(code, params.playerName!);
-            }, 500);
+            }, 1000);
         }
     });
 
     // Post joined message to parent (for test mode)
     $: if ($gameStore.viewMode === 'player' && $selfId && !joinedPosted) {
         joinedPosted = true;
+        isAutoJoining = false;
         postToParent({ type: 'JOINED', clientId: $selfId });
     }
     $: playerState = $gameStore.playerState;
@@ -51,8 +61,8 @@
     $: finalResults = $gameStore.finalResults;
     $: hasResponded = $gameStore.hasResponded;
 
-    // Redirect if not a player
-    $: if ($gameStore.isDisplay || $gameStore.viewMode === 'home') {
+    // Redirect if not a player (but not while auto-joining in test mode)
+    $: if (!isAutoJoining && ($gameStore.isDisplay || $gameStore.viewMode === 'home')) {
         goto(`${base}/`);
     }
 

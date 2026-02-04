@@ -305,8 +305,8 @@
                         document.getElementById('currentCode').textContent = gameCode;
                         log(`Game created with code: ${gameCode}`, 'success');
                         updateStatus('Spawning players...');
-                        // Small delay then spawn players
-                        setTimeout(spawnPlayers, 500);
+                        // Wait for display/creator to fully initialize before spawning players
+                        setTimeout(spawnPlayers, 1500);
                     }
                     break;
 
@@ -331,6 +331,8 @@
             }
         }
 
+        let gameCodeTimeout = null;
+
         function startTest() {
             if (isRunning) return;
 
@@ -351,10 +353,17 @@
             document.getElementById('log').innerHTML = '';
 
             log('Starting test harness...');
-            updateStatus('Creating game...');
+            updateStatus('Creating game (may take ~30s if server is cold)...');
 
             // Listen for messages from iframes
             window.addEventListener('message', handleMessage);
+
+            // Set timeout warning for slow server
+            gameCodeTimeout = setTimeout(() => {
+                if (!gameCode) {
+                    log('Still waiting for game code... server may be starting up', 'error');
+                }
+            }, 10000);
 
             // Create the first frame - this one creates the game
             if (includeDisplay) {
@@ -387,23 +396,33 @@
                 return;
             }
 
+            // Clear the timeout warning
+            if (gameCodeTimeout) {
+                clearTimeout(gameCodeTimeout);
+                gameCodeTimeout = null;
+            }
+
             const includeDisplay = document.getElementById('includeDisplay').checked;
             const startIndex = includeDisplay ? 1 : 2;
             const playerCount = parseInt(document.getElementById('playerCount').value) || 2;
 
-            log(`Spawning ${playerCount} player(s)...`);
+            const playersToSpawn = playerCount - startIndex + 1;
+            log(`Spawning ${playersToSpawn} player(s) with staggered timing...`);
 
+            // Spawn players with staggered timing to avoid race conditions
             for (let i = startIndex; i <= playerCount; i++) {
-                frames.push({
-                    id: `p${i}`,
-                    label: `Player ${i}`,
-                    url: `${BASE_URL}/play/${gameCode}?autoJoin=true&playerName=Player${i}&testMode=true&testClientId=p${i}`,
-                    isDisplay: false
-                });
-                log(`Creating Player ${i} frame...`);
+                const delay = (i - startIndex) * 500; // 500ms between each player
+                setTimeout(() => {
+                    frames.push({
+                        id: `p${i}`,
+                        label: `Player ${i}`,
+                        url: `${BASE_URL}/play/${gameCode}?autoJoin=true&playerName=Player${i}&testMode=true&testClientId=p${i}`,
+                        isDisplay: false
+                    });
+                    log(`Creating Player ${i} frame...`);
+                    renderFrames();
+                }, delay);
             }
-
-            renderFrames();
         }
 
         function renderFrames() {
