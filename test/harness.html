@@ -15,22 +15,21 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #1a1a2e;
             color: #eee;
-            min-height: 100vh;
+            overflow: hidden;
         }
 
         .container {
             display: flex;
             flex-direction: column;
             height: 100vh;
-            padding: 1rem;
-            gap: 1rem;
+            padding: 0.75rem;
+            gap: 0.75rem;
         }
 
         .header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            flex-wrap: wrap;
             gap: 1rem;
         }
 
@@ -61,18 +60,13 @@
             text-transform: uppercase;
         }
 
-        input[type="text"], input[type="number"], select {
+        input[type="number"], select {
             background: #1a1a2e;
             border: 1px solid #444;
             border-radius: 0.25rem;
             padding: 0.5rem;
             color: #eee;
             font-size: 0.875rem;
-        }
-
-        input[type="text"]:focus, input[type="number"]:focus, select:focus {
-            outline: none;
-            border-color: #8b5cf6;
         }
 
         input[type="checkbox"] {
@@ -102,73 +96,14 @@
             padding: 0.5rem 1rem;
             font-size: 0.875rem;
             cursor: pointer;
-            transition: background 0.2s;
         }
 
-        button:hover {
-            background: #7c3aed;
-        }
-
-        button:disabled {
-            background: #444;
-            cursor: not-allowed;
-        }
-
-        button.secondary {
-            background: #444;
-        }
-
-        button.secondary:hover {
-            background: #555;
-        }
-
-        button.danger {
-            background: #dc2626;
-        }
-
-        button.danger:hover {
-            background: #b91c1c;
-        }
-
-        .frame-grid {
-            flex: 1;
-            display: grid;
-            gap: 0.5rem;
-            min-height: 0;
-        }
-
-        .frame-wrapper {
-            position: relative;
-            border-radius: 0.5rem;
-            overflow: hidden;
-            border: 2px solid #333;
-            background: #111;
-        }
-
-        .frame-wrapper.display {
-            border-color: #8b5cf6;
-        }
-
-        .frame-label {
-            position: absolute;
-            top: 0.5rem;
-            left: 0.5rem;
-            background: #333;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.75rem;
-            z-index: 10;
-        }
-
-        .frame-wrapper.display .frame-label {
-            background: #8b5cf6;
-        }
-
-        .frame-wrapper iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
+        button:hover { background: #7c3aed; }
+        button:disabled { background: #444; cursor: not-allowed; }
+        button.secondary { background: #444; }
+        button.secondary:hover { background: #555; }
+        button.danger { background: #dc2626; }
+        button.danger:hover { background: #b91c1c; }
 
         .status-bar {
             display: flex;
@@ -185,46 +120,79 @@
             color: #8b5cf6;
         }
 
-        .status-bar .status {
-            color: #aaa;
+        .status-bar .status { color: #aaa; }
+        .status-bar .status.ready { color: #22c55e; }
+
+        /* --- Frame grid --- */
+        .frame-area {
+            flex: 1;
+            display: flex;
+            gap: 0.5rem;
+            min-height: 0;
         }
 
-        .status-bar .status.ready {
-            color: #22c55e;
+        /* Display takes flexible space on the left */
+        .display-slot {
+            flex: 1 1 0;
+            min-width: 0;
         }
 
-        .log {
+        /* Players sit in a row on the right, each a narrow phone column */
+        .player-slots {
+            display: flex;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        /* No display: players fill full width evenly */
+        .player-slots.full-width {
+            flex: 1;
+        }
+
+        .frame-wrapper {
+            position: relative;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            border: 2px solid #333;
             background: #111;
+            height: 100%;
+        }
+
+        .frame-wrapper.display {
+            border-color: #8b5cf6;
+        }
+
+        /* Phone-shaped player frames */
+        .frame-wrapper.player {
+            width: 280px;
+        }
+
+        .player-slots.full-width .frame-wrapper.player {
+            width: auto;
+            flex: 1;
+            max-width: 360px;
+        }
+
+        .frame-label {
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            background: rgba(51, 51, 51, 0.85);
+            padding: 0.2rem 0.5rem;
             border-radius: 0.25rem;
-            padding: 0.5rem;
-            font-family: monospace;
-            font-size: 0.75rem;
-            color: #888;
-            max-height: 100px;
-            overflow-y: auto;
+            font-size: 0.7rem;
+            z-index: 10;
+            pointer-events: none;
         }
 
-        .log .entry {
-            margin-bottom: 0.25rem;
+        .frame-wrapper.display .frame-label {
+            background: rgba(139, 92, 246, 0.85);
         }
 
-        .log .entry.success {
-            color: #22c55e;
-        }
-
-        .log .entry.error {
-            color: #ef4444;
-        }
-
-        @media (max-width: 768px) {
-            .config-panel {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .config-group {
-                width: 100%;
-            }
+        .frame-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
         }
     </style>
 </head>
@@ -262,76 +230,80 @@
             </div>
         </div>
 
-        <div class="frame-grid" id="frameGrid"></div>
-
-        <div class="log" id="log" style="display: none;"></div>
+        <div class="frame-area" id="frameArea" style="display: none;">
+            <div class="display-slot" id="displaySlot" style="display: none;"></div>
+            <div class="player-slots" id="playerSlots"></div>
+        </div>
     </div>
 
     <script>
         const BASE_URL = 'https://michaelwjones.github.io/group-web-game';
 
-        let frames = [];
         let gameCode = null;
         let isRunning = false;
-        let pendingPlayers = 0;
         let joinedCount = 0;
+        let expectedTotal = 0;
+        let gameCodeTimeout = null;
 
-        function log(message, type = '') {
-            const logEl = document.getElementById('log');
-            const entry = document.createElement('div');
-            entry.className = 'entry ' + type;
-            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
-            logEl.appendChild(entry);
-            logEl.scrollTop = logEl.scrollHeight;
-        }
+        function log(msg) { console.log('[harness]', msg); }
 
         function updateStatus(text, ready = false) {
-            const statusEl = document.getElementById('status');
-            statusEl.textContent = text;
-            statusEl.className = 'status' + (ready ? ' ready' : '');
+            const el = document.getElementById('status');
+            el.textContent = text;
+            el.className = 'status' + (ready ? ' ready' : '');
+        }
+
+        function addFrame(container, id, label, url, cssClass) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'frame-wrapper ' + cssClass;
+            wrapper.id = 'frame-' + id;
+
+            const lbl = document.createElement('div');
+            lbl.className = 'frame-label';
+            lbl.textContent = label;
+
+            const iframe = document.createElement('iframe');
+            iframe.src = url;
+            iframe.title = label;
+
+            wrapper.appendChild(lbl);
+            wrapper.appendChild(iframe);
+            container.appendChild(wrapper);
+            log('Frame added: ' + label);
         }
 
         function handleMessage(event) {
-            // Only handle messages from our iframes
             if (!event.data || typeof event.data.type !== 'string') return;
-
             const data = event.data;
-            log(`Received: ${data.type}${data.code ? ' code=' + data.code : ''}${data.clientId ? ' client=' + data.clientId : ''}`);
+            log('Message: ' + JSON.stringify(data));
 
             switch (data.type) {
                 case 'GAME_CREATED':
                     if (data.code && !gameCode) {
                         gameCode = data.code;
                         document.getElementById('currentCode').textContent = gameCode;
-                        log(`Game created with code: ${gameCode}`, 'success');
+                        if (gameCodeTimeout) { clearTimeout(gameCodeTimeout); gameCodeTimeout = null; }
+                        log('Game created: ' + gameCode);
                         updateStatus('Spawning players...');
-                        // Wait for display/creator to fully initialize before spawning players
                         setTimeout(spawnPlayers, 1500);
                     }
                     break;
 
                 case 'JOINED':
                     joinedCount++;
-                    log(`Client joined: ${data.clientId}`, 'success');
-                    checkAllJoined();
+                    log('Joined: ' + data.clientId + ' (' + joinedCount + '/' + expectedTotal + ')');
+                    if (joinedCount >= expectedTotal) {
+                        updateStatus('Ready! Host can start the game.', true);
+                    } else {
+                        updateStatus('Joining... (' + joinedCount + '/' + expectedTotal + ')');
+                    }
                     break;
 
                 case 'ERROR':
-                    log(`Error: ${data.message}`, 'error');
+                    log('Error from iframe: ' + data.message);
                     break;
             }
         }
-
-        function checkAllJoined() {
-            const totalExpected = frames.length;
-            if (joinedCount >= totalExpected) {
-                updateStatus('Ready! Host can start the game.', true);
-            } else {
-                updateStatus(`Joining... (${joinedCount}/${totalExpected})`);
-            }
-        }
-
-        let gameCodeTimeout = null;
 
         function startTest() {
             if (isRunning) return;
@@ -342,150 +314,77 @@
 
             isRunning = true;
             gameCode = null;
-            frames = [];
             joinedCount = 0;
-            pendingPlayers = playerCount;
+            expectedTotal = playerCount + (includeDisplay ? 1 : 0);
 
-            // Show UI
+            // Show frame area, hide config
             document.getElementById('setupPanel').style.display = 'none';
             document.getElementById('statusBar').style.display = 'flex';
-            document.getElementById('log').style.display = 'block';
-            document.getElementById('log').innerHTML = '';
+            const frameArea = document.getElementById('frameArea');
+            frameArea.style.display = 'flex';
 
-            log('Starting test harness...');
-            updateStatus('Creating game (may take ~30s if server is cold)...');
+            const displaySlot = document.getElementById('displaySlot');
+            const playerSlots = document.getElementById('playerSlots');
+            displaySlot.innerHTML = '';
+            playerSlots.innerHTML = '';
 
-            // Listen for messages from iframes
-            window.addEventListener('message', handleMessage);
-
-            // Set timeout warning for slow server
-            gameCodeTimeout = setTimeout(() => {
-                if (!gameCode) {
-                    log('Still waiting for game code... server may be starting up', 'error');
-                }
-            }, 10000);
-
-            // Create the first frame - this one creates the game
             if (includeDisplay) {
-                // Display creates the game
-                frames.push({
-                    id: 'display',
-                    label: 'Display',
-                    url: `${BASE_URL}/?autoCreate=true&gameType=${gameType}&asDisplay=true&testMode=true&testClientId=display`,
-                    isDisplay: true
-                });
-                log('Creating display frame (will create game)...');
+                displaySlot.style.display = 'block';
+                playerSlots.classList.remove('full-width');
             } else {
-                // Player 1 creates the game
-                frames.push({
-                    id: 'p1',
-                    label: 'Player 1',
-                    url: `${BASE_URL}/?autoCreate=true&gameType=${gameType}&playerName=Player1&testMode=true&testClientId=p1`,
-                    isDisplay: false
-                });
-                pendingPlayers--;
-                log('Creating Player 1 frame (will create game)...');
+                displaySlot.style.display = 'none';
+                playerSlots.classList.add('full-width');
             }
 
-            renderFrames();
+            updateStatus('Creating game (may take ~30s if server is cold)...');
+            window.addEventListener('message', handleMessage);
+
+            gameCodeTimeout = setTimeout(() => {
+                if (!gameCode) log('Still waiting for game code... server may be waking up');
+            }, 10000);
+
+            // Create the first frame
+            if (includeDisplay) {
+                addFrame(displaySlot, 'display', 'Display',
+                    `${BASE_URL}/?autoCreate=true&gameType=${gameType}&asDisplay=true&testMode=true&testClientId=display`,
+                    'display');
+            } else {
+                addFrame(playerSlots, 'p1', 'Player 1',
+                    `${BASE_URL}/?autoCreate=true&gameType=${gameType}&playerName=Player1&testMode=true&testClientId=p1`,
+                    'player');
+            }
         }
 
         function spawnPlayers() {
-            if (!gameCode) {
-                log('No game code yet, waiting...', 'error');
-                return;
-            }
-
-            // Clear the timeout warning
-            if (gameCodeTimeout) {
-                clearTimeout(gameCodeTimeout);
-                gameCodeTimeout = null;
-            }
+            if (!gameCode) { log('No game code yet'); return; }
 
             const includeDisplay = document.getElementById('includeDisplay').checked;
             const startIndex = includeDisplay ? 1 : 2;
             const playerCount = parseInt(document.getElementById('playerCount').value) || 2;
+            const playerSlots = document.getElementById('playerSlots');
 
-            const playersToSpawn = playerCount - startIndex + 1;
-            log(`Spawning ${playersToSpawn} player(s) with staggered timing...`);
-
-            // Spawn players with staggered timing to avoid race conditions
             for (let i = startIndex; i <= playerCount; i++) {
-                const delay = (i - startIndex) * 500; // 500ms between each player
+                const delay = (i - startIndex) * 500;
                 setTimeout(() => {
-                    frames.push({
-                        id: `p${i}`,
-                        label: `Player ${i}`,
-                        url: `${BASE_URL}/play/${gameCode}?autoJoin=true&playerName=Player${i}&testMode=true&testClientId=p${i}`,
-                        isDisplay: false
-                    });
-                    log(`Creating Player ${i} frame...`);
-                    renderFrames();
+                    addFrame(playerSlots, 'p' + i, 'Player ' + i,
+                        `${BASE_URL}/play/${gameCode}?autoJoin=true&playerName=Player${i}&testMode=true&testClientId=p${i}`,
+                        'player');
                 }, delay);
             }
         }
 
-        function renderFrames() {
-            const grid = document.getElementById('frameGrid');
-
-            if (frames.length === 0) {
-                grid.innerHTML = '';
-                return;
-            }
-
-            // Calculate grid layout
-            const hasDisplay = frames.some(f => f.isDisplay);
-            const playerFrames = frames.filter(f => !f.isDisplay);
-
-            if (hasDisplay && playerFrames.length > 0) {
-                const rows = Math.max(1, Math.ceil(playerFrames.length / 2));
-                grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-                grid.style.gridTemplateColumns = '2fr 1fr 1fr';
-            } else if (hasDisplay) {
-                // Only display, no players yet
-                grid.style.gridTemplateRows = '1fr';
-                grid.style.gridTemplateColumns = '1fr';
-            } else {
-                const cols = Math.ceil(Math.sqrt(frames.length));
-                const rows = Math.ceil(frames.length / cols);
-                grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-                grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-            }
-
-            // Build HTML
-            let html = '';
-            frames.forEach((frame) => {
-                const displayClass = frame.isDisplay ? 'display' : '';
-                let style = '';
-
-                if (frame.isDisplay && hasDisplay && playerFrames.length > 0) {
-                    const rows = Math.max(1, Math.ceil(playerFrames.length / 2));
-                    style = `grid-row: 1 / ${rows + 1}; grid-column: 1 / 2;`;
-                }
-
-                html += `
-                    <div class="frame-wrapper ${displayClass}" style="${style}" id="frame-${frame.id}">
-                        <div class="frame-label">${frame.label}</div>
-                        <iframe src="${frame.url}" title="${frame.label}"></iframe>
-                    </div>
-                `;
-            });
-
-            grid.innerHTML = html;
-        }
-
         function reset() {
             window.removeEventListener('message', handleMessage);
+            if (gameCodeTimeout) { clearTimeout(gameCodeTimeout); gameCodeTimeout = null; }
             isRunning = false;
             gameCode = null;
-            frames = [];
             joinedCount = 0;
 
             document.getElementById('setupPanel').style.display = 'block';
             document.getElementById('statusBar').style.display = 'none';
-            document.getElementById('log').style.display = 'none';
-            document.getElementById('frameGrid').innerHTML = '';
-            document.getElementById('currentCode').textContent = '-';
+            document.getElementById('frameArea').style.display = 'none';
+            document.getElementById('displaySlot').innerHTML = '';
+            document.getElementById('playerSlots').innerHTML = '';
         }
 
         function toggleFullscreen() {
