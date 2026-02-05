@@ -85,6 +85,9 @@ function handleMessage(ws: WebSocket, message: ClientToServerMessage): void {
         case 'player:response':
             handlePlayerResponse(ws, message.response);
             break;
+        case 'player:action':
+            handlePlayerAction(ws, message.action);
+            break;
         case 'ping':
             send(ws, { type: 'pong' });
             break;
@@ -308,7 +311,19 @@ function handleHostNextRound(ws: WebSocket): void {
         return;
     }
 
-    if (game.getStatus() !== 'between_rounds') {
+    const status = game.getStatus();
+
+    // Allow host to end round while in_progress (for host-controlled games)
+    if (status === 'in_progress') {
+        endCurrentRound(game, conn.gameCode);
+        // After ending, check if it was the last round
+        if (game.isLastRound()) {
+            endGame(game, conn.gameCode);
+        }
+        return;
+    }
+
+    if (status !== 'between_rounds') {
         return;
     }
 
@@ -381,6 +396,34 @@ function handlePlayerResponse(ws: WebSocket, response: unknown): void {
     if (result.allReceived) {
         endCurrentRound(game, conn.gameCode);
     }
+}
+
+function handlePlayerAction(ws: WebSocket, action: unknown): void {
+    const conn = registry.getConnection(ws);
+    if (!conn?.playerId || !conn.gameCode) {
+        sendError(ws, ErrorCodes.INVALID_SESSION, 'Not in a game');
+        return;
+    }
+
+    const game = gameManager.getGame(conn.gameCode);
+    if (!game) {
+        sendError(ws, ErrorCodes.GAME_NOT_FOUND, 'Game not found');
+        return;
+    }
+
+    if (game.getStatus() !== 'in_progress') {
+        return;
+    }
+
+    const result = game.handlePlayerAction(conn.playerId, action);
+
+    if (!result.success) {
+        sendError(ws, ErrorCodes.INVALID_MESSAGE, result.error ?? 'Invalid action');
+        return;
+    }
+
+    // Broadcast updated state to all
+    broadcastStateUpdate(game, conn.gameCode);
 }
 
 function handleDisconnect(ws: WebSocket): void {

@@ -264,6 +264,10 @@ export function submitResponse(response: unknown): void {
     gameStore.update((s) => ({ ...s, hasResponded: true }));
 }
 
+export function submitAction(action: unknown): void {
+    send({ type: 'player:action', action });
+}
+
 export function leaveGame(): void {
     clearPlayerSession();
     client?.clearReconnectData();

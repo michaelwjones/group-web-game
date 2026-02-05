@@ -50,6 +50,11 @@ export interface C2S_PlayerResponse {
     response: unknown;
 }
 
+export interface C2S_PlayerAction {
+    type: 'player:action';
+    action: unknown;
+}
+
 export interface C2S_Ping {
     type: 'ping';
 }
@@ -64,6 +69,7 @@ export type ClientToServerMessage =
     | C2S_HostNextRound
     | C2S_HostEndGame
     | C2S_PlayerResponse
+    | C2S_PlayerAction
     | C2S_Ping;
 
 // ============================================

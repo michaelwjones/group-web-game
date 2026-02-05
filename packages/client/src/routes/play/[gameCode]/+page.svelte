@@ -91,6 +91,7 @@
         totalRounds={playerState?.totalRounds ?? 1}
         GameInput={gameComponents.PlayerInput}
         privateState={$privateState}
+        isHost={$isHost}
     />
 {:else if $gameStatus === 'between_rounds' && roundResults}
     <PlayerResults

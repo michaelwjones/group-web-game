@@ -27,6 +27,11 @@ export interface GamePlugin<
     maxPlayers: number;
     defaultRounds: number;
 
+    /** When true, players can overwrite their response instead of getting ALREADY_RESPONDED error */
+    mutableResponses?: boolean;
+    /** When true, rounds don't auto-end when all players respond; host must manually end */
+    hostControlledRounds?: boolean;
+
     createInitialState(
         players: string[],
         config: GameConfig
@@ -80,6 +85,17 @@ export interface GamePlugin<
     shouldAutoAdvance?(
         session: GameSession<THidden, TPublic, TPlayerPrivate>
     ): boolean;
+
+    /** Handle real-time player actions (not responses). Used for live updates like self-assessment toggles. */
+    onPlayerAction?(
+        playerId: string,
+        action: unknown,
+        session: GameSession<THidden, TPublic, TPlayerPrivate>
+    ): {
+        hidden: THidden;
+        public: TPublic;
+        playerPrivate?: Map<string, TPlayerPrivate>;
+    };
 }
 
 export type AnyGamePlugin = GamePlugin<unknown, unknown, unknown, unknown, unknown, unknown>;

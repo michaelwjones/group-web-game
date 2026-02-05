@@ -50,6 +50,8 @@ export const triviaPlugin: GamePlugin<
     minPlayers: 2,
     maxPlayers: 20,
     defaultRounds: 5,
+    mutableResponses: true,
+    hostControlledRounds: true,
 
     createInitialState(players: string[], config: GameConfig) {
         const questions = getRandomQuestions(config.totalRounds);

@@ -294,7 +294,8 @@ export class GameSessionManager {
         playerId: string,
         response: unknown
     ): { success: boolean; error?: string; allReceived: boolean } {
-        if (this.responses.has(playerId)) {
+        // Check if already responded - allow overwrite if mutableResponses is enabled
+        if (this.responses.has(playerId) && !this.plugin.mutableResponses) {
             return { success: false, error: 'Already responded', allReceived: false };
         }
 
@@ -317,12 +318,32 @@ export class GameSessionManager {
             this.session.playerPrivateState = stateUpdate.playerPrivate;
         }
 
-        const allReceived = this.responses.size >= this.getConnectedPlayers().length;
+        // Never auto-end if hostControlledRounds is enabled
+        const allReceived = !this.plugin.hostControlledRounds &&
+            this.responses.size >= this.getConnectedPlayers().length;
         return { success: true, allReceived };
     }
 
     hasResponded(playerId: string): boolean {
         return this.responses.has(playerId);
+    }
+
+    handlePlayerAction(
+        playerId: string,
+        action: unknown
+    ): { success: boolean; error?: string } {
+        if (!this.plugin.onPlayerAction) {
+            return { success: false, error: 'Plugin does not support player actions' };
+        }
+
+        const stateUpdate = this.plugin.onPlayerAction(playerId, action, this.session);
+        this.session.hiddenState = stateUpdate.hidden;
+        this.session.publicState = stateUpdate.public;
+        if (stateUpdate.playerPrivate) {
+            this.session.playerPrivateState = stateUpdate.playerPrivate;
+        }
+
+        return { success: true };
     }
 
     getResponses(): PlayerResponse[] {
