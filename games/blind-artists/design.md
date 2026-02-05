@@ -4,6 +4,8 @@
 
 Blind Artists is a cooperative game where everyone is "blind" and trying to paint a picture together. Players don't know what they're painting—the image emerges from their collective contributions. Through deduction, clues, and coordination, they must paint the correct colors in the correct slots to match a hidden target that none of them can see.
 
+Players never see the colors on the canvas. They only learn what's been painted through Liaison feedback from the client. The challenge is piecing together fragmented information to guide brushes and painters toward the right result.
+
 ---
 
 ## Core Concepts
@@ -14,21 +16,21 @@ The canvas has 4 zones, each with 4 slots, for 16 total slots to fill.
 
 **Zones** represent depth layers in the scene:
 
-| Zone | Concept | What it becomes |
-|------|---------|-----------------|
-| Back | Distant/upper | Sky, deep space, backdrop |
-| Mid | Middle depth | Horizon, mountains, main subject |
-| Fore | Close/lower | Ground, foreground, table |
-| Focus | Accent element | Sun, moon, focal object |
+| Zone | Concept |
+|------|---------|
+| Back | Distant/upper |
+| Mid | Middle depth |
+| Fore | Close/lower |
+| Focus | Accent element |
 
 **Slots** define each zone's visual character:
 
 | Slot | Purpose |
 |------|---------|
-| Primary | Dominant color of the zone |
-| Secondary | Secondary color adding interest |
-| Highlight | Brightest point in the zone |
-| Shadow | Depth and contrast |
+| Primary | Dominant color |
+| Secondary | Secondary color |
+| Highlight | Accentuates the element |
+| Shadow | Provides depth and contrast |
 
 **The Target** is the client's hidden vision—a complete mapping of colors to all 16 slots:
 
@@ -41,11 +43,13 @@ The canvas has 4 zones, each with 4 slots, for 16 total slots to fill.
 
 Each `?` is one of 6 possible colors. Players must deduce and paint the correct colors.
 
+**Canvas visibility:** Players can see which slots have been painted and which are still empty. They cannot see what color is in any slot—not when it's painted, not after. Color information comes exclusively through Liaison feedback.
+
 ### Colors
 
 **6 colors** can appear on the canvas: Red, Yellow, Blue, Orange, Green, Purple.
 
-**3 pigments** exist among players: Red, Yellow, Blue. Pigments are distributed as equally as possible among players at game start. These combine to make colors:
+**3 pigments** exist among players: Red, Yellow, Blue. Pigments are distributed among players at game start based on the target's color requirements to maximize overhead (see Target and pigment generation). These combine to make colors:
 
 | Result | Pigments Combined |
 |--------|-------------------|
@@ -69,39 +73,38 @@ Every player has two things:
 | Fine Brush | Select 1 player → creates a primary color |
 | Thick Brush | Select 2 adjacent players → creates primary or secondary |
 | Painter | Select loaded brush + zone + slot → paints 1 stroke |
-| Liaison | Ask the client 1 question → shares feedback |
+| Liaison | Ask the client 1 question → shares feedback verbally |
 
 ### Brushes
 
-Brushes select players to create loaded brushes with colors.
+Brushes select players to create loaded brushes with colors. The resulting color is never revealed to anyone—not to the brush, not to the painter, not to anyone. Players only learn what color ended up on the canvas through Liaison feedback.
 
 **Fine Brush:**
 - Select 1 player → creates a primary color (Red, Yellow, or Blue)
 - Can select any player, including themselves
-- The resulting color is hidden until the brush is used
 
 **Thick Brush:**
 - Select 2 players: any player + one of their direct neighbors
 - Can select themselves (as one of the two)
-- The resulting color is hidden until the brush is used
 
 **Pigment limits:**
-- Each player can only be selected 4 times total across the entire game
-- Once a player has been selected 4 times, they cannot be chosen by any Brush
+- Each player can only be selected 5 times total across the entire game
+- Once a player has been selected 5 times, they cannot be chosen by any Brush
 - Remaining uses per player must be visible in the UI
-- Multiple brushes can select the same player in a round, as long as the pigment limit is respected
-- If more brushes select a player than they have uses remaining, affected brushes must re-choose
+
+**Pigment limit enforcement:** Multiple brushes can select the same player within a single round. A player becomes unavailable only when their lifetime total of 5 uses has been reached (counting all previous rounds plus current selections). Players can freely change their brush choices until the host ends the round.
 
 ### Painters
 
 - Choose a loaded brush, a zone, and a slot
-- Apply the brush's color to that slot
+- The brush's color is applied to that slot (the painter does not learn what color it is)
 - If the slot already has a color, the new stroke replaces it
-- Multiple painters cannot target the same slot in the same round—if conflicts occur, affected painters must re-select until all choices are unique
+
+**Slot exclusivity:** Each zone+slot combination can only be selected by one painter at a time. If a painter has a slot selected, it is unavailable to other painters. If that painter changes their choice, the slot becomes available again. Players can freely change their selections until the host ends the round.
 
 ### Liaisons
 
-Liaisons are the conduit between the players and the client.
+Liaisons are the conduit between the players and the client. They receive feedback on their screen and share it with the group verbally—there is no in-app chat or text sharing.
 
 **Starting knowledge:**
 - Know the scene type
@@ -109,9 +112,9 @@ Liaisons are the conduit between the players and the client.
 - Liaisons learn different elements—no overlap among them
 
 **Each round:**
-- Choose a question category and receive feedback
+- Choose a question category and receive feedback on their screen
 - Receive freebie feedback from the client
-- Share all feedback with the group in their own words
+- Share all feedback with the group in their own words, out loud
 
 #### Question Menu
 
@@ -162,59 +165,28 @@ At the end of each round, each Liaison receives an additional piece of unprompte
 
 ---
 
-## Round Structure
-
-The game lasts exactly 5 rounds.
-
-### Simultaneous Choices
-
-All players make their choices at any time during the round. Once everyone has submitted, the round resolves.
-
-**Brushes:**
-- Fine Brushes select 1 player
-- Thick Brushes select 2 adjacent players
-- Loaded brushes are created with the resulting colors
-
-**Painters:**
-- Select a loaded brush, a zone, and a slot
-- The brush's color is applied to that slot
-- New strokes replace existing colors in that slot
-
-**Liaisons:**
-- Choose what question to ask the client
-- Receive feedback from their question
-- Receive freebie feedback from the client
-
-### Resolution
-
-- All choices resolve simultaneously
-- Canvas is updated with new strokes
-- Feedback is generated and shared
-
----
-
 ## Information & Deduction
 
-### What Players Know
+### What Players Can See
 
 - Their own role (Brush/Painter/Liaison)
 - Seating arrangement (who is adjacent—matters for Thick Brushes)
-- What colors have been painted where (visible canvas)
-- Feedback from the client (via Liaisons)
+- Which canvas slots have been painted and which are empty (no colors, no history)
+- Each player's remaining pigment uses
+- Each player's pigment self-assessment
 - Liaisons also know the scene type and one element each (no overlap)
 
-### What Players Don't Know
+### What Players Cannot See
 
 - Their own pigment
 - Other players' pigments
 - The target painting (specific color requirements)
-- What color a loaded brush contains (until used)
+- What color any loaded brush contains
+- What color is in any canvas slot
 
 ### Starting Clues
 
-At game start, each player receives one clue about pigment distribution. Clues are intentionally vague—they provide a starting point for deduction but never certainty. Players must use brush strokes to confirm their theories.
-
-Design principle: No combination of starting clues should allow players to deduce anyone's exact pigment. Clues narrow possibilities; strokes confirm them.
+At game start, each player receives one clue about pigment distribution. Clues are randomly assigned from the types below. They provide a starting point for deduction—ideally they narrow possibilities without giving certainty, though exact deduction from clues alone is not strictly prevented.
 
 **Neighbor Clues:**
 | Format | Example |
@@ -255,10 +227,39 @@ This is optional and can be changed at any time. Visible to all players to aid c
 
 ### How Deduction Works
 
-- Feedback hints at what slots need
-- Painted colors hint at what pigments created them
-- Players deduce pigments from patterns of success/failure
-- Coordination improves as information accumulates
+- Liaison feedback hints at what slots need which colors
+- When a brush's color lands on the canvas and Liaisons later report on it, players can work backward to deduce which pigments produced that color
+- Players deduce pigments from patterns of success and failure
+- Coordination improves as information accumulates over rounds
+
+---
+
+## Round Structure
+
+The game lasts exactly 5 rounds. Rounds are untimed—players can change their choices freely until the host ends the round. The host has a button to advance to resolution when the group is ready.
+
+### Live Choices
+
+All players set their choices during the round. Choices are not locked on submission—players can change their mind at any time until the host ends the round.
+
+**Brushes:**
+- Fine Brushes select 1 player
+- Thick Brushes select 2 adjacent players
+- Multiple brushes can select the same player in the same round, as long as the player has not hit their lifetime limit of 5 uses (see Brushes section)
+
+**Painters:**
+- Select a loaded brush, a zone, and a slot
+- A zone+slot combination can only be selected by one painter at a time; if another painter already has it selected, it is unavailable until that painter changes their choice (see Painters section)
+
+**Liaisons:**
+- Choose what question to ask the client
+
+### Resolution
+
+Once all players have submitted and the host ends the round:
+- Brush colors are determined and applied to the canvas
+- Liaison feedback is generated and shown on their screens
+- The canvas slot grid updates to reflect which slots now have paint
 
 ---
 
@@ -266,18 +267,23 @@ This is optional and can be changed at any time. Visible to all players to aid c
 
 ### Circular Seating
 
-Players must be arranged in a circle. The game needs to know the seating order because Thick Brushes can only select adjacent players. Each player will need to specify who is sitting to their left and right. The game will then generate the circle from that information.
+Players are arranged in a circle. The game needs to know the seating order because Thick Brushes can only select adjacent players. Each player specifies who is sitting to their left and right. The server assembles the circle from these reports and repeats the request for areas that are inconsistent.
 
-### Example: 12 Players
+### Player Counts
 
-| Role | Count |
-|------|-------|
-| Fine Brush | 2 |
-| Thick Brush | 2 |
-| Painter | 5 |
-| Liaison | 3 |
+The game supports 12-18 players. Roles are assigned according to the table below.
 
-**Per round:**
+| Players | Fine Brush | Thick Brush | Painter | Liaison |
+|---------|------------|-------------|---------|---------|
+| 12 | 2 | 2 | 5 | 3 |
+| 13 | TBD | TBD | TBD | TBD |
+| 14 | TBD | TBD | TBD | TBD |
+| 15 | TBD | TBD | TBD | TBD |
+| 16 | TBD | TBD | TBD | TBD |
+| 17 | TBD | TBD | TBD | TBD |
+| 18 | TBD | TBD | TBD | TBD |
+
+**12-player breakdown per round:**
 - 4 Brushes → 4 loaded brushes available
 - 5 Painters → 5 strokes applied
 - 3 Liaisons → 3 questions asked, 3 freebies received
@@ -291,14 +297,38 @@ Players must be arranged in a circle. The game needs to know the seating order b
 
 ---
 
+## Win Condition
+
+The game uses a tiered result based on how many of the 16 slots match the target:
+
+| Correct Slots | Result |
+|---------------|--------|
+| 16 | Masterpiece |
+| 14-15 | Impressed |
+| 12-13 | Satisfied |
+| Below 12 | Rejected |
+
+### End of Game
+
+After the final round resolves, the game reveals:
+- The tier result
+- The players' canvas (with colors now visible)
+- The target painting
+
+Both canvases are shown side by side so players can compare for themselves.
+
+---
+
 ## Content: Landscape
 
 The target painting is always a scene. Currently, the only scene type is Landscape.
 
-**Target generation:**
-- One element is randomly selected for each zone. All combinations are valid—no curated pairings.
-- For Primary and Secondary slots, a color is randomly chosen from the element's valid options.
-- For Highlight and Shadow slots, a color is randomly chosen from all 6 colors.
+**Target and pigment generation:**
+
+1. **Generate target** — One element is randomly selected for each zone. All combinations are valid—no curated pairings. For Primary and Secondary slots, a color is randomly chosen from the element's valid options. For Highlight and Shadow slots, a color is randomly chosen from all 6 colors.
+2. **Calculate pigment demand** — Tally the Red, Yellow, and Blue pigment uses required to paint the target. Each primary color (Red, Yellow, Blue) costs 1 use of its type. Each secondary color (Orange, Green, Purple) costs 1 use of each constituent pigment.
+3. **Distribute pigments** — Assign pigments to players to maximize overhead. Instead of always distributing evenly, skew the assignment toward the pigment types in higher demand so that each type has the best possible supply-to-demand ratio.
+4. **Validate** — Each pigment type must have at least 2x supply relative to its demand. If any type falls below 2x, regenerate the target and repeat.
 
 Each element below has valid colors for Primary and Secondary slots.
 
@@ -333,15 +363,3 @@ Each element below has valid colors for Primary and Secondary slots.
 | Lone Tree | Green, Orange | Green, Orange, Red, Yellow, Purple |
 | Windmill | Orange, Red | Orange, Red, Yellow, Purple, Blue |
 | Campfire | Orange, Yellow | Orange, Yellow, Red |
-
----
-
-## Open Questions
-
-### Win Condition
-- Binary: All 16 slots must be correct (exact match)
-- Scoring: Points based on how many slots match
-- Threshold: Need X of 16 slots correct to "satisfy" the client
-- Tiered: Bronze/Silver/Gold based on match percentage
-
-
