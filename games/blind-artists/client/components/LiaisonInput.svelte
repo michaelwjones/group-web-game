@@ -21,6 +21,7 @@
 
     const zones: Zone[] = ['back', 'mid', 'fore', 'focus'];
     const slotTypes: SlotType[] = ['primary', 'secondary', 'highlight', 'shadow'];
+    const categories: Category[] = ['locate', 'diagnose', 'prescribe', 'validate'];
 
     const categoryDescriptions: Record<Category, string> = {
         locate: 'Find the worst zone or slot type',
@@ -94,14 +95,14 @@
     <!-- Category selection -->
     {#if !selectedCategory}
         <div class="space-y-2">
-            {#each ['locate', 'diagnose', 'prescribe', 'validate'] as cat}
+            {#each categories as cat}
                 <button
                     class="w-full p-3 rounded-lg border-2 border-gray-600 bg-gray-800
                         hover:border-yellow-400 transition-all text-left"
-                    on:click={() => selectCategory(cat as Category)}
+                    on:click={() => selectCategory(cat)}
                 >
                     <span class="font-bold text-yellow-400">{capitalize(cat)}</span>
-                    <p class="text-xs text-gray-400">{categoryDescriptions[cat as Category]}</p>
+                    <p class="text-xs text-gray-400">{categoryDescriptions[cat]}</p>
                 </button>
             {/each}
         </div>

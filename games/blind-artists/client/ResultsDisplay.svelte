@@ -42,6 +42,14 @@
 
     const zones: Zone[] = ['back', 'mid', 'fore', 'focus'];
 
+    // All slots occupied for target display
+    const targetOccupied: Record<Zone, Record<SlotType, boolean>> = {
+        back: { primary: true, secondary: true, highlight: true, shadow: true },
+        mid: { primary: true, secondary: true, highlight: true, shadow: true },
+        fore: { primary: true, secondary: true, highlight: true, shadow: true },
+        focus: { primary: true, secondary: true, highlight: true, shadow: true }
+    };
+
     const pigmentColors: Record<Pigment, string> = {
         red: 'bg-red-500',
         yellow: 'bg-yellow-400',
@@ -80,9 +88,7 @@
         <div class="card">
             <h3 class="text-lg font-bold mb-2 text-center">The Target</h3>
             <CanvasGrid
-                canvasOccupied={Object.fromEntries(
-                    zones.map(z => [z, { primary: true, secondary: true, highlight: true, shadow: true }])
-                ) as Record<Zone, Record<SlotType, boolean>>}
+                canvasOccupied={targetOccupied}
                 canvasColors={results.target}
                 showComparison={false}
             />
