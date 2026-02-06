@@ -38,6 +38,9 @@ async function start() {
     const { triviaPlugin } = await import('@game/trivia/server');
     gameManager.registerPlugin(triviaPlugin);
 
+    const { blindArtistsPlugin } = await import('@game/blind-artists/server');
+    gameManager.registerPlugin(blindArtistsPlugin);
+
     // Cleanup stale games periodically
     setInterval(() => {
         gameManager.cleanupStaleGames();

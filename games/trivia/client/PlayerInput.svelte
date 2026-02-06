@@ -57,10 +57,4 @@
             </button>
         {/each}
     </div>
-
-    {#if selectedAnswer !== null}
-        <div class="mt-4 text-center text-gray-400 text-sm">
-            You can change your answer until the host ends the round
-        </div>
-    {/if}
 </div>
