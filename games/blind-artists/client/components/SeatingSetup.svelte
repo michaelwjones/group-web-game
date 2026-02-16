@@ -101,16 +101,6 @@
         dragOverIndex = null;
     }
 
-    function shuffle() {
-        const shuffled = [...orderedIds];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-        }
-        orderedIds = shuffled;
-        dispatch('change', orderedIds);
-    }
-
     // Visual index during drag: compute display order
     function getDisplayIndex(visualIndex: number): number {
         if (!dragging || dragIndex === null || dragOverIndex === null) return visualIndex;
@@ -172,11 +162,4 @@
         {/each}
     </div>
 
-    <!-- Shuffle button -->
-    <button
-        class="btn btn-secondary w-full"
-        on:click={shuffle}
-    >
-        Shuffle Order
-    </button>
 </div>
