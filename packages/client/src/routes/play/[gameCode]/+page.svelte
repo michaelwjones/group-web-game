@@ -16,6 +16,7 @@
     import { connectionState } from '$lib/stores/connection';
     import { clearPlayerSession } from '$lib/stores/player';
     import { getGameComponents } from '$lib/games/registry';
+    import { browser } from '$app/environment';
     import PlayerLobby from '$lib/components/player-device/PlayerLobby.svelte';
     import PlayerRound from '$lib/components/player-device/PlayerRound.svelte';
     import PlayerResults from '$lib/components/player-device/PlayerResults.svelte';
@@ -25,7 +26,8 @@
     let autoJoinPending = false;
     let autoJoinParams: ReturnType<typeof parseTestModeParams> | null = null;
     let joinedPosted = false;
-    let isAutoJoining = false;
+    // Initialize synchronously from URL so the redirect reactive never fires before onMount
+    let isAutoJoining = browser && new URLSearchParams(window.location.search).get('autoJoin') === 'true';
 
     $: gameCode = $page.params.gameCode ?? '';
 
