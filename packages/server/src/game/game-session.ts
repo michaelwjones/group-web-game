@@ -248,9 +248,14 @@ export class GameSessionManager {
     }
 
     startGame(): void {
-        const playerIds = this.getAllPlayers().map(p => p.id);
+        const players = this.getAllPlayers();
+        const playerIds = players.map(p => p.id);
+        const playerNames: Record<string, string> = {};
+        for (const p of players) {
+            playerNames[p.id] = p.name;
+        }
         const { hidden, public: publicState, playerPrivate } =
-            this.plugin.createInitialState(playerIds, this.session.config);
+            this.plugin.createInitialState(playerIds, this.session.config, playerNames);
 
         this.session.hiddenState = hidden;
         this.session.publicState = publicState;

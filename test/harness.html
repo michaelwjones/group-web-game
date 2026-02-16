@@ -126,27 +126,10 @@
         /* --- Frame grid --- */
         .frame-area {
             flex: 1;
-            display: flex;
+            display: grid;
             gap: 0.5rem;
             min-height: 0;
-        }
-
-        /* Display takes flexible space on the left */
-        .display-slot {
-            flex: 1 1 0;
-            min-width: 0;
-        }
-
-        /* Players sit in a row on the right, each a narrow phone column */
-        .player-slots {
-            display: flex;
-            gap: 0.5rem;
-            flex-shrink: 0;
-        }
-
-        /* No display: players fill full width evenly */
-        .player-slots.full-width {
-            flex: 1;
+            /* JS sets grid-template-columns based on available width */
         }
 
         .frame-wrapper {
@@ -155,22 +138,11 @@
             overflow: hidden;
             border: 2px solid #333;
             background: #111;
-            height: 100%;
+            min-height: 0;
         }
 
         .frame-wrapper.display {
             border-color: #8b5cf6;
-        }
-
-        /* Phone-shaped player frames */
-        .frame-wrapper.player {
-            width: 280px;
-        }
-
-        .player-slots.full-width .frame-wrapper.player {
-            width: auto;
-            flex: 1;
-            max-width: 360px;
         }
 
         .frame-label {
@@ -214,12 +186,12 @@
                     <label for="gameType">Game</label>
                     <select id="gameType">
                         <option value="trivia">Trivia</option>
-                        <option value="blind-artists">Blind Artists</option>
+                        <option value="blind-artists" selected>Blind Artists</option>
                     </select>
                 </div>
                 <div class="config-group">
                     <label for="playerCount">Players</label>
-                    <input type="number" id="playerCount" value="2" min="1" max="20" style="width: 4rem;">
+                    <input type="number" id="playerCount" value="12" min="1" max="20" style="width: 4rem;">
                 </div>
                 <div class="config-group">
                     <div class="checkbox-group">
@@ -231,20 +203,20 @@
             </div>
         </div>
 
-        <div class="frame-area" id="frameArea" style="display: none;">
-            <div class="display-slot" id="displaySlot" style="display: none;"></div>
-            <div class="player-slots" id="playerSlots"></div>
-        </div>
+        <div class="frame-area" id="frameArea" style="display: none;"></div>
     </div>
 
     <script>
         const BASE_URL = 'https://michaelwjones.github.io/group-web-game';
+
+        const MIN_FRAME_WIDTH = 260;
 
         let gameCode = null;
         let isRunning = false;
         let joinedCount = 0;
         let expectedTotal = 0;
         let gameCodeTimeout = null;
+        let totalFrames = 0;
 
         function log(msg) { console.log('[harness]', msg); }
 
@@ -254,7 +226,21 @@
             el.className = 'status' + (ready ? ' ready' : '');
         }
 
-        function addFrame(container, id, label, url, cssClass) {
+        function layoutGrid() {
+            const frameArea = document.getElementById('frameArea');
+            if (!frameArea || !isRunning) return;
+
+            const gap = 8; // 0.5rem
+            const availableWidth = frameArea.clientWidth;
+            const cols = Math.max(1, Math.min(totalFrames, Math.floor((availableWidth + gap) / (MIN_FRAME_WIDTH + gap))));
+            const rows = Math.ceil(totalFrames / cols);
+
+            frameArea.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            frameArea.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+        }
+
+        function addFrame(id, label, url, cssClass) {
+            const frameArea = document.getElementById('frameArea');
             const wrapper = document.createElement('div');
             wrapper.className = 'frame-wrapper ' + cssClass;
             wrapper.id = 'frame-' + id;
@@ -269,8 +255,10 @@
 
             wrapper.appendChild(lbl);
             wrapper.appendChild(iframe);
-            container.appendChild(wrapper);
+            frameArea.appendChild(wrapper);
             log('Frame added: ' + label);
+
+            layoutGrid();
         }
 
         function handleMessage(event) {
@@ -317,25 +305,16 @@
             gameCode = null;
             joinedCount = 0;
             expectedTotal = playerCount + (includeDisplay ? 1 : 0);
+            totalFrames = expectedTotal;
 
             // Show frame area, hide config
             document.getElementById('setupPanel').style.display = 'none';
             document.getElementById('statusBar').style.display = 'flex';
             const frameArea = document.getElementById('frameArea');
-            frameArea.style.display = 'flex';
+            frameArea.innerHTML = '';
+            frameArea.style.display = 'grid';
 
-            const displaySlot = document.getElementById('displaySlot');
-            const playerSlots = document.getElementById('playerSlots');
-            displaySlot.innerHTML = '';
-            playerSlots.innerHTML = '';
-
-            if (includeDisplay) {
-                displaySlot.style.display = 'block';
-                playerSlots.classList.remove('full-width');
-            } else {
-                displaySlot.style.display = 'none';
-                playerSlots.classList.add('full-width');
-            }
+            layoutGrid();
 
             updateStatus('Creating game (may take ~30s if server is cold)...');
             window.addEventListener('message', handleMessage);
@@ -346,12 +325,12 @@
 
             // Create the first frame
             if (includeDisplay) {
-                addFrame(displaySlot, 'display', 'Display',
+                addFrame('display', 'Display',
                     `${BASE_URL}/?autoCreate=true&gameType=${gameType}&asDisplay=true&testMode=true&testClientId=display`,
                     'display');
             } else {
-                addFrame(playerSlots, 'p1', 'Player 1',
-                    `${BASE_URL}/?autoCreate=true&gameType=${gameType}&playerName=Player1&testMode=true&testClientId=p1`,
+                addFrame('p1', 'Player 1',
+                    `${BASE_URL}/?autoCreate=true&gameType=${gameType}&playerName=${encodeURIComponent('Player 1')}&testMode=true&testClientId=p1`,
                     'player');
             }
         }
@@ -362,13 +341,12 @@
             const includeDisplay = document.getElementById('includeDisplay').checked;
             const startIndex = includeDisplay ? 1 : 2;
             const playerCount = parseInt(document.getElementById('playerCount').value) || 2;
-            const playerSlots = document.getElementById('playerSlots');
 
             for (let i = startIndex; i <= playerCount; i++) {
                 const delay = (i - startIndex) * 500;
                 setTimeout(() => {
-                    addFrame(playerSlots, 'p' + i, 'Player ' + i,
-                        `${BASE_URL}/play/${gameCode}?autoJoin=true&playerName=Player${i}&testMode=true&testClientId=p${i}`,
+                    addFrame('p' + i, 'Player ' + i,
+                        `${BASE_URL}/play/${gameCode}?autoJoin=true&playerName=${encodeURIComponent('Player ' + i)}&testMode=true&testClientId=p${i}`,
                         'player');
                 }, delay);
             }
@@ -380,12 +358,12 @@
             isRunning = false;
             gameCode = null;
             joinedCount = 0;
+            totalFrames = 0;
 
             document.getElementById('setupPanel').style.display = 'block';
             document.getElementById('statusBar').style.display = 'none';
             document.getElementById('frameArea').style.display = 'none';
-            document.getElementById('displaySlot').innerHTML = '';
-            document.getElementById('playerSlots').innerHTML = '';
+            document.getElementById('frameArea').innerHTML = '';
         }
 
         function toggleFullscreen() {
@@ -395,6 +373,8 @@
                 document.documentElement.requestFullscreen();
             }
         }
+
+        window.addEventListener('resize', layoutGrid);
     </script>
 </body>
 </html>

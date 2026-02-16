@@ -13,6 +13,7 @@
         joinGame
     } from '$lib/stores/game';
     import { parseTestModeParams, postToParent, isTestMode } from '$lib/stores/test-mode';
+    import { connectionState } from '$lib/stores/connection';
     import { clearPlayerSession } from '$lib/stores/player';
     import { getGameComponents } from '$lib/games/registry';
     import PlayerLobby from '$lib/components/player-device/PlayerLobby.svelte';
@@ -21,6 +22,8 @@
     import PlayerFinal from '$lib/components/player-device/PlayerFinal.svelte';
 
     let autoJoinHandled = false;
+    let autoJoinPending = false;
+    let autoJoinParams: ReturnType<typeof parseTestModeParams> | null = null;
     let joinedPosted = false;
     let isAutoJoining = false;
 
@@ -39,13 +42,18 @@
                 clearPlayerSession();
             }
 
-            const code = $page.params.gameCode ?? '';
-            // Longer delay to ensure WebSocket is connected
-            setTimeout(() => {
-                joinGame(code, params.playerName!);
-            }, 1000);
+            // Mark pending — the reactive block below fires joinGame once connected
+            autoJoinParams = params;
+            autoJoinPending = true;
         }
     });
+
+    // Wait for WebSocket to connect before auto-joining (handles server cold start)
+    $: if (autoJoinPending && $connectionState === 'connected' && autoJoinParams) {
+        autoJoinPending = false;
+        const code = $page.params.gameCode ?? '';
+        joinGame(code, autoJoinParams.playerName!);
+    }
 
     // Post joined message to parent (for test mode)
     $: if ($gameStore.viewMode === 'player' && $selfId && !joinedPosted) {

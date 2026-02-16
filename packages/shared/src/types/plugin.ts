@@ -34,7 +34,8 @@ export interface GamePlugin<
 
     createInitialState(
         players: string[],
-        config: GameConfig
+        config: GameConfig,
+        playerNames?: Record<string, string>
     ): {
         hidden: THidden;
         public: TPublic;

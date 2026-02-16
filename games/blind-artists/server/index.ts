@@ -82,7 +82,7 @@ export const blindArtistsPlugin: GamePlugin<
     mutableResponses: true,
     hostControlledRounds: true,
 
-    createInitialState(players: string[], config: GameConfig) {
+    createInitialState(players: string[], config: GameConfig, playerNames?: Record<string, string>) {
         // Get seating order from config or use player order
         const seatingOrder: string[] = (config.customConfig?.seatingOrder as string[]) || [...players];
 
@@ -96,14 +96,14 @@ export const blindArtistsPlugin: GamePlugin<
             roles[players[i]] = shuffledRoles[i];
         }
 
-        // Create player names map (using player IDs as names for now - real names come from session)
-        const playerNames: Record<string, string> = {};
+        // Build player names map, falling back to IDs if not provided
+        const names: Record<string, string> = {};
         for (const playerId of players) {
-            playerNames[playerId] = playerId; // Will be replaced with real names in actual usage
+            names[playerId] = playerNames?.[playerId] ?? playerId;
         }
 
         // Generate starting clues for all players
-        const clues = generateAllClues(players, pigments, seatingOrder, playerNames);
+        const clues = generateAllClues(players, pigments, seatingOrder, names);
 
         // Assign liaison knowledge - each liaison learns 3 of 4 zone elements
         const liaisonIds = players.filter(id => roles[id] === 'liaison');

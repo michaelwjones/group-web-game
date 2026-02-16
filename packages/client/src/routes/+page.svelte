@@ -3,7 +3,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { gameStore, createGame, joinGame, leaveGame } from '$lib/stores/game';
-    import { lastError } from '$lib/stores/connection';
+    import { lastError, connectionState } from '$lib/stores/connection';
     import { parseTestModeParams, postToParent } from '$lib/stores/test-mode';
     import { clearPlayerSession } from '$lib/stores/player';
     import GameSelector from '$lib/components/home/GameSelector.svelte';
@@ -13,8 +13,10 @@
     let mode: 'menu' | 'select-game' | 'join' | 'create' | 'enter-name' = 'menu';
     let selectedGameType = '';
     let mounted = false;
+    let autoCreatePending = false;
     let autoCreateHandled = false;
     let gameCreatedPosted = false;
+    let autoCreateParams: ReturnType<typeof parseTestModeParams> | null = null;
 
     onMount(() => {
         mounted = true;
@@ -29,16 +31,22 @@
                 clearPlayerSession();
             }
 
-            // Longer delay to ensure WebSocket is connected (handles server cold start)
-            setTimeout(() => {
-                if (params.asDisplay) {
-                    createGame(params.gameType!);
-                } else if (params.playerName) {
-                    createGame(params.gameType!, params.playerName);
-                }
-            }, 1000);
+            // Mark pending — the reactive block below fires createGame once connected
+            autoCreateParams = params;
+            autoCreatePending = true;
         }
     });
+
+    // Wait for WebSocket to connect before auto-creating (handles server cold start)
+    $: if (autoCreatePending && $connectionState === 'connected' && autoCreateParams) {
+        autoCreatePending = false;
+        const params = autoCreateParams;
+        if (params.asDisplay) {
+            createGame(params.gameType!);
+        } else if (params.playerName) {
+            createGame(params.gameType!, params.playerName);
+        }
+    }
 
     // Post game code to parent when created (for test mode orchestration)
     $: if (mounted && $gameStore.gameCode && !gameCreatedPosted) {
