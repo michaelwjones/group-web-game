@@ -14,18 +14,11 @@
         blue: 'B'
     };
 
-    const selectedColors: Record<Pigment | 'unknown', string> = {
-        unknown: 'bg-gray-500 border-white',
-        red: 'bg-red-600 border-white',
-        yellow: 'bg-yellow-500 border-white',
-        blue: 'bg-blue-600 border-white'
-    };
-
-    const unselectedColors: Record<Pigment | 'unknown', string> = {
-        unknown: 'bg-gray-700 border-gray-600',
-        red: 'bg-gray-700 border-red-800',
-        yellow: 'bg-gray-700 border-yellow-800',
-        blue: 'bg-gray-700 border-blue-800'
+    const textColors: Record<Pigment | 'unknown', string> = {
+        unknown: 'text-gray-300',
+        red: 'text-red-400',
+        yellow: 'text-yellow-400',
+        blue: 'text-blue-400'
     };
 
     function selectPigment(pigment: Pigment | 'unknown') {
@@ -41,8 +34,8 @@
             {@const selected = currentAssessment === option}
             <button
                 class="w-9 h-9 rounded-full font-bold text-sm transition-all border-2
-                    {selected ? selectedColors[option] : unselectedColors[option]}
-                    {selected ? 'scale-110 shadow-lg text-white' : 'scale-90 text-gray-500'}"
+                    {textColors[option]}
+                    {selected ? 'bg-gray-500 border-white scale-110 shadow-lg' : 'bg-gray-700 border-gray-600 scale-90 opacity-50'}"
                 on:click={() => selectPigment(option)}
             >
                 {labels[option]}
