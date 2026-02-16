@@ -15,10 +15,10 @@
     };
 
     const colors: Record<Pigment | 'unknown', string> = {
-        unknown: 'bg-gray-600 hover:bg-gray-500',
-        red: 'bg-red-600 hover:bg-red-500',
-        yellow: 'bg-yellow-500 hover:bg-yellow-400',
-        blue: 'bg-blue-600 hover:bg-blue-500'
+        unknown: 'bg-gray-600',
+        red: 'bg-red-600',
+        yellow: 'bg-yellow-500',
+        blue: 'bg-blue-600'
     };
 
     function selectPigment(pigment: Pigment | 'unknown') {
@@ -29,12 +29,13 @@
 
 <div class="self-assessment">
     <p class="text-xs text-gray-400 mb-1">I think I am:</p>
-    <div class="flex gap-1">
+    <div class="flex gap-2">
         {#each options as option}
+            {@const selected = currentAssessment === option}
             <button
-                class="w-8 h-8 rounded-full font-bold text-sm transition-all
+                class="w-9 h-9 rounded-full font-bold text-sm transition-all
                     {colors[option]}
-                    {currentAssessment === option ? 'ring-2 ring-white scale-110' : ''}"
+                    {selected ? 'ring-3 ring-white scale-110 shadow-lg' : 'opacity-40 scale-90'}"
                 on:click={() => selectPigment(option)}
             >
                 {labels[option]}
