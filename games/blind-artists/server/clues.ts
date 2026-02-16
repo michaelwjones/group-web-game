@@ -115,14 +115,14 @@ function generateDistanceClue(
     // Try positive clue
     for (const pigment of shuffle(pigmentOptions)) {
         if (nearbyPigments.includes(pigment)) {
-            return `At least one person within 2 seats of you is ${capitalize(pigment)}`;
+            return `At least one person within 2 seats of you (not including you) is ${capitalize(pigment)}`;
         }
     }
 
     // Try negative clue
     for (const pigment of shuffle(pigmentOptions)) {
         if (!nearbyPigments.includes(pigment)) {
-            return `No one within 2 seats of you is ${capitalize(pigment)}`;
+            return `No one within 2 seats of you (not including you) is ${capitalize(pigment)}`;
         }
     }
 
