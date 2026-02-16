@@ -3,6 +3,7 @@
     import { submitResponse } from '$lib/stores/game';
     import SeatingCircle from './SeatingCircle.svelte';
     import SelfAssessment from './SelfAssessment.svelte';
+    import { statusTextClass } from './selection';
 
     type Role = 'fine-brush' | 'thick-brush' | 'painter' | 'liaison';
     type Pigment = 'red' | 'yellow' | 'blue';
@@ -13,8 +14,11 @@
     export let pigmentUsesRemaining: Record<string, number>;
     export let selfAssessments: Record<string, Pigment | 'unknown'>;
     export let selfId: string;
+    export let submittedPlayers: string[] = [];
 
     let selectedPlayer: string | null = null;
+
+    $: confirmed = submittedPlayers.includes(selfId) && selectedPlayer !== null;
 
     // Players with no remaining uses are disabled
     $: disabledPlayers = Object.entries(pigmentUsesRemaining)
@@ -45,11 +49,14 @@
         {selfId}
         onPlayerClick={selectPlayer}
         selectedPlayers={selectedPlayer ? [selectedPlayer] : []}
+        confirmedPlayers={confirmed ? [selectedPlayer] : []}
         {disabledPlayers}
     >
         <div slot="center" class="text-gray-500">
             {#if selectedPlayer}
-                <span class="text-primary-400">Selected</span>
+                <span class="{statusTextClass(confirmed ? 'confirmed' : 'pending')}">
+                    {confirmed ? '✓ Confirmed' : '⏳ Submitting...'}
+                </span>
             {:else}
                 <span>Tap a player</span>
             {/if}

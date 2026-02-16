@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { PlayerPublic } from '@game/shared';
+    import { selectionState, circleRingClass } from './selection';
 
     type Role = 'fine-brush' | 'thick-brush' | 'painter' | 'liaison';
     type Pigment = 'red' | 'yellow' | 'blue';
@@ -12,6 +13,7 @@
     export let selfId: string | null = null;
     export let onPlayerClick: ((playerId: string) => void) | null = null;
     export let selectedPlayers: string[] = [];
+    export let confirmedPlayers: string[] = [];
     export let disabledPlayers: string[] = [];
     export let compact: boolean = false;
 
@@ -41,8 +43,11 @@
         return player?.name || playerId;
     }
 
-    function isSelected(playerId: string): boolean {
-        return selectedPlayers.includes(playerId);
+    function ringClass(playerId: string): string {
+        return circleRingClass(selectionState(
+            selectedPlayers.includes(playerId),
+            confirmedPlayers.includes(playerId)
+        ));
     }
 
     function isDisabled(playerId: string): boolean {
@@ -66,7 +71,7 @@
         {@const role = roles[playerId]}
         {@const uses = pigmentUsesRemaining[playerId] ?? 5}
         {@const assessment = selfAssessments[playerId] || 'unknown'}
-        {@const selected = isSelected(playerId)}
+        {@const ring = ringClass(playerId)}
         {@const disabled = isDisabled(playerId)}
         {@const isSelf = playerId === selfId}
 
@@ -75,7 +80,7 @@
                 {compact ? 'w-12 h-12' : 'w-16 h-16'}
                 rounded-full border-2
                 {role ? roleColors[role] : 'border-gray-500'}
-                {selected ? 'ring-4 ring-primary-400 scale-110' : ''}
+                {ring}
                 {disabled ? 'opacity-40' : ''}
                 {isSelf ? 'ring-2 ring-white' : ''}
                 {onPlayerClick && !disabled ? 'cursor-pointer hover:scale-105' : 'cursor-default'}

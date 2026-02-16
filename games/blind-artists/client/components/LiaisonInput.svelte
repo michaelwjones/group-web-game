@@ -1,6 +1,7 @@
 <script lang="ts">
     import { submitResponse } from '$lib/stores/game';
     import SelfAssessment from './SelfAssessment.svelte';
+    import { statusTextClass } from './selection';
 
     type Zone = 'back' | 'mid' | 'fore' | 'focus';
     type SlotType = 'primary' | 'secondary' | 'highlight' | 'shadow';
@@ -8,6 +9,7 @@
 
     export let selfId: string;
     export let selfAssessments: Record<string, Pigment | 'unknown'>;
+    export let submittedPlayers: string[] = [];
     export let liaisonElements: { zone: Zone; element: string }[] = [];
     export let sceneType: string = 'Landscape';
     export let feedback: string[] = [];
@@ -18,6 +20,8 @@
     let selectedCategory: Category | null = null;
     let selectedChoice: string | { zone: Zone; slot: SlotType } | null = null;
     let submitted = false;
+
+    $: serverConfirmed = submittedPlayers.includes(selfId) && submitted;
 
     const zones: Zone[] = ['back', 'mid', 'fore', 'focus'];
     const slotTypes: SlotType[] = ['primary', 'secondary', 'highlight', 'shadow'];
@@ -169,8 +173,8 @@
             {/each}
         </div>
     {:else if submitted}
-        <div class="text-center text-yellow-400 p-4">
-            ✓ Question submitted - waiting for round to end
+        <div class="text-center p-4 {statusTextClass(serverConfirmed ? 'confirmed' : 'pending')}">
+            {serverConfirmed ? '✓ Confirmed - waiting for round to end' : '⏳ Submitting question...'}
         </div>
         <button
             class="w-full p-2 rounded-lg border border-gray-600 text-gray-400 text-sm

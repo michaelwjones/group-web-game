@@ -3,6 +3,7 @@
     import { submitResponse } from '$lib/stores/game';
     import CanvasGrid from './CanvasGrid.svelte';
     import SelfAssessment from './SelfAssessment.svelte';
+    import { selectionState, buttonClass, statusTextClass } from './selection';
 
     type Zone = 'back' | 'mid' | 'fore' | 'focus';
     type SlotType = 'primary' | 'secondary' | 'highlight' | 'shadow';
@@ -17,9 +18,12 @@
     export let selfId: string;
     export let canvasOccupied: Record<Zone, Record<SlotType, boolean>>;
     export let slotClaims: Record<string, { zone: Zone; slot: SlotType } | null>;
+    export let submittedPlayers: string[] = [];
 
     let selectedBrush: string | null = null;
     let selectedSlot: { zone: Zone; slot: SlotType } | null = null;
+
+    $: confirmed = submittedPlayers.includes(selfId) && selectedBrush !== null && selectedSlot !== null;
 
     // Get brush players
     $: brushPlayers = seatingOrder.filter(id =>
@@ -75,9 +79,7 @@
                 {@const name = playerNames[brushId] || brushId}
                 <button
                     class="px-3 py-2 rounded-lg border-2 transition-all flex items-center gap-2
-                        {selectedBrush === brushId
-                            ? 'border-primary-400 bg-primary-900'
-                            : 'border-gray-600 bg-gray-800 hover:border-gray-400'}"
+                        {buttonClass(selectionState(selectedBrush === brushId, confirmed && selectedBrush === brushId))}"
                     on:click={() => selectBrush(brushId)}
                 >
                     <span>{getBrushIcon(role)}</span>
@@ -96,14 +98,15 @@
             {playerNames}
             onSlotClick={selectSlot}
             {selectedSlot}
+            confirmedSlot={confirmed ? selectedSlot : null}
             {disabledSlots}
         />
     </div>
 
     <!-- Status -->
     {#if selectedBrush && selectedSlot}
-        <div class="text-center text-primary-400 text-sm mb-4">
-            ✓ Ready to paint!
+        <div class="text-center text-sm mb-4 {statusTextClass(confirmed ? 'confirmed' : 'pending')}">
+            {confirmed ? '✓ Confirmed!' : '⏳ Submitting...'}
         </div>
     {:else}
         <div class="text-center text-gray-500 text-sm mb-4">

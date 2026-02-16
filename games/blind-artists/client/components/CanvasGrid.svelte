@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { selectionState, gridCellClass } from './selection';
+
     type Zone = 'back' | 'mid' | 'fore' | 'focus';
     type SlotType = 'primary' | 'secondary' | 'highlight' | 'shadow';
 
@@ -10,6 +12,7 @@
     export let playerNames: Record<string, string> = {};
     export let onSlotClick: ((zone: Zone, slot: SlotType) => void) | null = null;
     export let selectedSlot: { zone: Zone; slot: SlotType } | null = null;
+    export let confirmedSlot: { zone: Zone; slot: SlotType } | null = null;
     export let disabledSlots: { zone: Zone; slot: SlotType }[] = [];
 
     const zones: Zone[] = ['back', 'mid', 'fore', 'focus'];
@@ -46,6 +49,17 @@
         return selectedSlot?.zone === zone && selectedSlot?.slot === slot;
     }
 
+    function isSlotConfirmed(zone: Zone, slot: SlotType): boolean {
+        return confirmedSlot?.zone === zone && confirmedSlot?.slot === slot;
+    }
+
+    function slotSelectionClass(zone: Zone, slot: SlotType): string {
+        return gridCellClass(selectionState(
+            isSlotSelected(zone, slot),
+            isSlotConfirmed(zone, slot)
+        ));
+    }
+
     function getClaimingPlayer(zone: Zone, slot: SlotType): string | null {
         for (const [playerId, claim] of Object.entries(slotClaims)) {
             if (claim && claim.zone === zone && claim.slot === slot) {
@@ -78,7 +92,7 @@
                 {@const occupied = canvasOccupied[zone][slot]}
                 {@const claimingPlayer = getClaimingPlayer(zone, slot)}
                 {@const disabled = isSlotDisabled(zone, slot)}
-                {@const selected = isSlotSelected(zone, slot)}
+                {@const selClass = slotSelectionClass(zone, slot)}
                 {@const canvasColor = canvasColors?.[zone][slot]}
                 {@const targetColor = targetColors?.[zone][slot]}
                 {@const correct = showComparison && isCorrect(zone, slot)}
@@ -90,8 +104,8 @@
                             : occupied
                                 ? 'bg-gray-500'
                                 : 'bg-gray-800'}
-                        {selected
-                            ? 'border-primary-400 ring-2 ring-primary-400'
+                        {selClass
+                            ? selClass
                             : disabled
                                 ? 'border-gray-700 opacity-50'
                                 : claimingPlayer

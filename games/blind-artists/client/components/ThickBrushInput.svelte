@@ -3,6 +3,7 @@
     import { submitResponse } from '$lib/stores/game';
     import SeatingCircle from './SeatingCircle.svelte';
     import SelfAssessment from './SelfAssessment.svelte';
+    import { statusTextClass } from './selection';
 
     type Role = 'fine-brush' | 'thick-brush' | 'painter' | 'liaison';
     type Pigment = 'red' | 'yellow' | 'blue';
@@ -13,8 +14,11 @@
     export let pigmentUsesRemaining: Record<string, number>;
     export let selfAssessments: Record<string, Pigment | 'unknown'>;
     export let selfId: string;
+    export let submittedPlayers: string[] = [];
 
     let selectedPlayers: string[] = [];
+
+    $: confirmed = submittedPlayers.includes(selfId) && selectedPlayers.length === 2;
 
     // Get neighbors for a player
     function getNeighbors(playerId: string): string[] {
@@ -85,11 +89,14 @@
         {selfId}
         onPlayerClick={selectPlayer}
         {selectedPlayers}
+        confirmedPlayers={confirmed ? selectedPlayers : []}
         {disabledPlayers}
     >
         <div slot="center" class="text-gray-500 text-center">
             {#if selectedPlayers.length === 2}
-                <span class="text-primary-400">Selected!</span>
+                <span class="{statusTextClass(confirmed ? 'confirmed' : 'pending')}">
+                    {confirmed ? '✓ Confirmed!' : '⏳ Submitting...'}
+                </span>
                 <button class="block text-xs text-gray-400 hover:text-white" on:click={clearSelection}>
                     Change
                 </button>

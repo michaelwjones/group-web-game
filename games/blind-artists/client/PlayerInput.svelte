@@ -52,6 +52,7 @@
     $: selfAssessments = publicState?.selfAssessments || {};
     $: canvasOccupied = publicState?.canvasOccupied || roundData.canvasOccupied;
     $: slotClaims = publicState?.slotClaims || {};
+    $: submittedPlayers = publicState?.submittedPlayers || [];
 </script>
 
 <div class="player-input h-full flex flex-col">
@@ -73,6 +74,7 @@
                 {pigmentUsesRemaining}
                 {selfAssessments}
                 {selfId}
+                {submittedPlayers}
             />
         {:else if role === 'thick-brush'}
             <ThickBrushInput
@@ -82,6 +84,7 @@
                 {pigmentUsesRemaining}
                 {selfAssessments}
                 {selfId}
+                {submittedPlayers}
             />
         {:else if role === 'painter'}
             <PainterInput
@@ -93,11 +96,13 @@
                 {selfId}
                 {canvasOccupied}
                 {slotClaims}
+                {submittedPlayers}
             />
         {:else if role === 'liaison'}
             <LiaisonInput
                 {selfId}
                 {selfAssessments}
+                {submittedPlayers}
                 liaisonElements={privateState?.liaisonElements || []}
                 sceneType={privateState?.sceneType || 'Landscape'}
                 feedback={privateState?.feedback || []}
