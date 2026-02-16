@@ -22,7 +22,7 @@
     }
 
     function handleStart() {
-        if (isBlindArtists && seatingOrder.length > 0) {
+        if (isBlindArtists) {
             startGame({ seatingOrder });
         } else {
             startGame();

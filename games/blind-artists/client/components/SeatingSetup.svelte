@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { PlayerPublic } from '@game/shared';
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
 
     export let players: PlayerPublic[] = [];
     export let selfId: string = '';
@@ -11,18 +11,32 @@
     // Ordered player IDs — initialize from players prop
     let orderedIds: string[] = players.map(p => p.id);
 
+    // Emit initial order once mounted
+    onMount(() => {
+        dispatch('change', orderedIds);
+    });
+
     // Keep in sync when players join/leave
     $: {
         const currentSet = new Set(orderedIds);
         const playerSet = new Set(players.map(p => p.id));
+        let changed = false;
         // Add new players at the end
         for (const p of players) {
             if (!currentSet.has(p.id)) {
                 orderedIds = [...orderedIds, p.id];
+                changed = true;
             }
         }
         // Remove players who left
-        orderedIds = orderedIds.filter(id => playerSet.has(id));
+        const filtered = orderedIds.filter(id => playerSet.has(id));
+        if (filtered.length !== orderedIds.length) {
+            orderedIds = filtered;
+            changed = true;
+        }
+        if (changed) {
+            dispatch('change', orderedIds);
+        }
     }
 
     $: orderedPlayers = orderedIds.map(id => players.find(p => p.id === id)!).filter(Boolean);
@@ -37,10 +51,6 @@
     let listEl: HTMLDivElement;
 
     function onPointerDown(e: PointerEvent, index: number) {
-        // Only start drag from the handle
-        const target = e.target as HTMLElement;
-        if (!target.closest('[data-drag-handle]')) return;
-
         e.preventDefault();
         dragging = true;
         dragIndex = index;
@@ -54,7 +64,7 @@
             itemHeight = (items[0] as HTMLElement).offsetHeight + 8; // gap
         }
 
-        (e.target as HTMLElement).setPointerCapture(e.pointerId);
+        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     }
 
     function onPointerMove(e: PointerEvent) {
@@ -134,7 +144,7 @@
             {@const displayIdx = getDisplayIndex(index)}
             <div
                 data-seat-item
-                class="flex items-center gap-2 p-3 rounded-lg transition-all
+                class="flex items-center gap-2 p-3 rounded-lg transition-all cursor-grab active:cursor-grabbing touch-none
                     {isDragged ? 'bg-primary-700 shadow-lg z-10 relative' : 'bg-gray-700'}
                     {dragging && !isDragged && dragOverIndex === index ? 'border-t-2 border-primary-400' : ''}"
                 style="{isDragged ? `transform: translateY(${dragOffsetY}px);` : ''}"
@@ -145,13 +155,8 @@
                     {displayIdx + 1}
                 </span>
 
-                <!-- Drag handle -->
-                <span
-                    data-drag-handle
-                    class="cursor-grab active:cursor-grabbing text-gray-500 hover:text-gray-300 touch-none text-lg leading-none select-none"
-                    role="img"
-                    aria-label="drag handle"
-                >&#x2807;</span>
+                <!-- Drag handle icon -->
+                <span class="text-gray-500 text-lg leading-none">&#x2807;</span>
 
                 <!-- Player name -->
                 <span class="font-medium flex-1 truncate">{player.name}</span>
