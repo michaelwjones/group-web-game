@@ -74,7 +74,7 @@ function handleMessage(ws: WebSocket, message: ClientToServerMessage): void {
             handleHostClaim(ws);
             break;
         case 'host:start':
-            handleHostStart(ws);
+            handleHostStart(ws, message);
             break;
         case 'host:next-round':
             handleHostNextRound(ws);
@@ -265,7 +265,7 @@ function handleHostClaim(ws: WebSocket): void {
     broadcastPlayersUpdate(conn.gameCode);
 }
 
-function handleHostStart(ws: WebSocket): void {
+function handleHostStart(ws: WebSocket, message: ClientToServerMessage & { type: 'host:start' }): void {
     const conn = registry.getConnection(ws);
     if (!conn?.playerId || !conn.gameCode) {
         sendError(ws, ErrorCodes.INVALID_SESSION, 'Not in a game');
@@ -287,6 +287,10 @@ function handleHostStart(ws: WebSocket): void {
     if (!canStart) {
         sendError(ws, ErrorCodes.NOT_ENOUGH_PLAYERS, reason ?? 'Cannot start');
         return;
+    }
+
+    if (message.customConfig) {
+        game.setCustomConfig(message.customConfig);
     }
 
     game.startGame();

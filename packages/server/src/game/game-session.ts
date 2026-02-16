@@ -230,6 +230,14 @@ export class GameSessionManager {
         return null;
     }
 
+    // Custom config (set by host before starting)
+    setCustomConfig(customConfig: Record<string, unknown>): void {
+        this.session.config.customConfig = {
+            ...this.session.config.customConfig,
+            ...customConfig
+        };
+    }
+
     // Game flow
     canStart(): { canStart: boolean; reason?: string } {
         if (this.session.status !== 'lobby') {

@@ -247,8 +247,8 @@ export function claimHost(): void {
     send({ type: 'host:claim' });
 }
 
-export function startGame(): void {
-    send({ type: 'host:start' });
+export function startGame(customConfig?: Record<string, unknown>): void {
+    send({ type: 'host:start', customConfig });
 }
 
 export function nextRound(): void {

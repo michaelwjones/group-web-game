@@ -35,6 +35,7 @@ export interface C2S_HostClaim {
 
 export interface C2S_HostStart {
     type: 'host:start';
+    customConfig?: Record<string, unknown>;
 }
 
 export interface C2S_HostNextRound {

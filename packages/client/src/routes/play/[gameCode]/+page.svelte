@@ -93,6 +93,7 @@
         isHost={$isHost}
         selfId={$selfId ?? ''}
         minPlayers={2}
+        gameType={gameType ?? ''}
     />
 {:else if $gameStatus === 'in_progress' && currentRound && gameComponents}
     <PlayerRound
