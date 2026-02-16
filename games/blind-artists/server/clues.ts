@@ -83,7 +83,7 @@ function generateNeighborClue(
     // Try positive clue: "One of your neighbors is [color]"
     for (const pigment of shuffle(pigmentOptions)) {
         if (neighborPigments.includes(pigment)) {
-            return `One of your neighbors is ${capitalize(pigment)}`;
+            return `At least one of your neighbors is ${capitalize(pigment)}`;
         }
     }
 
