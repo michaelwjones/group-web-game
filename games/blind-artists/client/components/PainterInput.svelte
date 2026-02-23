@@ -9,16 +9,23 @@
     type SlotType = 'primary' | 'secondary' | 'highlight' | 'shadow';
     type Role = 'fine-brush' | 'thick-brush' | 'painter' | 'liaison';
     type Pigment = 'red' | 'yellow' | 'blue';
+    type PainterSubtype = Zone | SlotType;
+
+    const ALL_ZONES: Zone[] = ['back', 'mid', 'fore', 'focus'];
+    const ALL_SLOTS: SlotType[] = ['primary', 'secondary', 'highlight', 'shadow'];
 
     export let players: PlayerPublic[];
     export let seatingOrder: string[];
     export let roles: Record<string, Role>;
+    export let painterSubtypes: Record<string, PainterSubtype> = {};
     export let pigmentUsesRemaining: Record<string, number>;
     export let selfAssessments: Record<string, Pigment | 'unknown'>;
     export let selfId: string;
     export let canvasOccupied: Record<Zone, Record<SlotType, boolean>>;
     export let slotClaims: Record<string, { zone: Zone; slot: SlotType } | null>;
     export let submittedPlayers: string[] = [];
+
+    $: ownSubtype = painterSubtypes[selfId] ?? null;
 
     let selectedBrush: string | null = null;
     let selectedSlot: { zone: Zone; slot: SlotType } | null = null;
@@ -33,10 +40,27 @@
     // Get player names
     $: playerNames = Object.fromEntries(players.map(p => [p.id, p.name]));
 
+    // Slots outside this painter's subtype
+    $: subtypeInvalidSlots = (() => {
+        if (!ownSubtype) return [];
+        const isZone = ALL_ZONES.includes(ownSubtype as Zone);
+        const invalid: { zone: Zone; slot: SlotType }[] = [];
+        for (const z of ALL_ZONES) {
+            for (const s of ALL_SLOTS) {
+                if (isZone ? z !== ownSubtype : s !== ownSubtype) {
+                    invalid.push({ zone: z, slot: s });
+                }
+            }
+        }
+        return invalid;
+    })();
+
     // Slots claimed by other painters
-    $: disabledSlots = Object.entries(slotClaims)
+    $: claimedByOthers = Object.entries(slotClaims)
         .filter(([id, claim]) => id !== selfId && claim !== null)
         .map(([_, claim]) => claim!);
+
+    $: disabledSlots = [...subtypeInvalidSlots, ...claimedByOthers];
 
     function selectBrush(brushId: string) {
         selectedBrush = brushId;
@@ -67,7 +91,10 @@
 <div class="painter-input p-4">
     <div class="text-center mb-4">
         <h3 class="text-lg font-bold text-green-400">🎨 Painter</h3>
-        <p class="text-sm text-gray-400">Select a brush and a slot to paint</p>
+        {#if ownSubtype}
+            <p class="text-sm text-green-300 font-medium capitalize">{ownSubtype} painter</p>
+        {/if}
+        <p class="text-sm text-gray-400">Select a brush and a valid slot to paint</p>
     </div>
 
     <!-- Brush selection -->

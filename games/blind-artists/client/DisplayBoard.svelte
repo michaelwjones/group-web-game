@@ -8,6 +8,7 @@
     type SlotType = 'primary' | 'secondary' | 'highlight' | 'shadow';
     type Role = 'fine-brush' | 'thick-brush' | 'painter' | 'liaison';
     type Pigment = 'red' | 'yellow' | 'blue';
+    type PainterSubtype = string;
 
     export let roundData: {
         roundNumber: number;
@@ -20,6 +21,7 @@
         pigmentUsesRemaining: Record<string, number>;
         selfAssessments: Record<string, Pigment | 'unknown'>;
         roles: Record<string, Role>;
+        painterSubtypes: Record<string, PainterSubtype>;
         seatingOrder: string[];
         roundNumber: number;
         totalRounds: number;
@@ -32,6 +34,7 @@
 
     $: seatingOrder = publicState?.seatingOrder || [];
     $: roles = publicState?.roles || {};
+    $: painterSubtypes = publicState?.painterSubtypes || {};
     $: pigmentUsesRemaining = publicState?.pigmentUsesRemaining || {};
     $: selfAssessments = publicState?.selfAssessments || {};
     $: canvasOccupied = publicState?.canvasOccupied || roundData.canvasOccupied;
@@ -67,6 +70,7 @@
                 {players}
                 {seatingOrder}
                 {roles}
+                {painterSubtypes}
                 {pigmentUsesRemaining}
                 {selfAssessments}
                 selfId={null}

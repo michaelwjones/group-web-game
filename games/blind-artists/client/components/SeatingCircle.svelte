@@ -4,10 +4,12 @@
 
     type Role = 'fine-brush' | 'thick-brush' | 'painter' | 'liaison';
     type Pigment = 'red' | 'yellow' | 'blue';
+    type PainterSubtype = string;
 
     export let players: PlayerPublic[] = [];
     export let seatingOrder: string[] = [];
     export let roles: Record<string, Role> = {};
+    export let painterSubtypes: Record<string, PainterSubtype> = {};
     export let pigmentUsesRemaining: Record<string, number> = {};
     export let selfAssessments: Record<string, Pigment | 'unknown'> = {};
     export let selfId: string | null = null;
@@ -16,6 +18,11 @@
     export let confirmedPlayers: string[] = [];
     export let disabledPlayers: string[] = [];
     export let compact: boolean = false;
+
+    const subtypeAbbr: Record<string, string> = {
+        back: 'Bk', mid: 'Md', fore: 'Fr', focus: 'Fc',
+        primary: 'Pr', secondary: 'Sc', highlight: 'Hi', shadow: 'Sh'
+    };
 
     const roleIcons: Record<Role, string> = {
         'fine-brush': '🖌️',
@@ -69,6 +76,7 @@
     {#each seatingOrder as playerId, index}
         {@const pos = getPlayerPosition(index, seatingOrder.length)}
         {@const role = roles[playerId]}
+        {@const subtype = painterSubtypes[playerId]}
         {@const uses = pigmentUsesRemaining[playerId] ?? 5}
         {@const assessment = selfAssessments[playerId] || 'unknown'}
         {@const ring = ringClass(playerId)}
@@ -99,6 +107,11 @@
                 {isSelf ? 'text-primary-300' : 'text-white'}">
                 {getPlayerName(playerId).slice(0, compact ? 3 : 6)}
             </span>
+
+            <!-- Painter subtype -->
+            {#if role === 'painter' && subtype}
+                <span class="text-[10px] text-green-400">{subtypeAbbr[subtype] ?? subtype}</span>
+            {/if}
 
             <!-- Pigment uses -->
             {#if !compact}

@@ -72,7 +72,7 @@ Every player has two things:
 |------|------------------|
 | Fine Brush | Select 1 player → creates a primary color |
 | Thick Brush | Select 2 adjacent players → creates primary or secondary |
-| Painter | Select loaded brush + zone + slot → paints 1 stroke |
+| Painter | Select loaded brush + valid slot (per subtype) → paints 1 stroke |
 | Liaison | Ask the client 1 question → shares feedback verbally |
 
 ### Brushes
@@ -96,7 +96,22 @@ Brushes select players to create loaded brushes with colors. The resulting color
 
 ### Painters
 
-- Choose a loaded brush, a zone, and a slot
+Each painter is assigned one of 8 **subtypes** that restricts which canvas slots they can paint:
+
+| Subtype | Can paint |
+|---------|-----------|
+| Back | Any slot in the Back zone |
+| Mid | Any slot in the Mid zone |
+| Fore | Any slot in the Fore zone |
+| Focus | Any slot in the Focus zone |
+| Primary | The Primary slot in any zone |
+| Secondary | The Secondary slot in any zone |
+| Highlight | The Highlight slot in any zone |
+| Shadow | The Shadow slot in any zone |
+
+Subtypes are assigned from a fixed priority order: Back, Mid, Fore, Focus, Shadow, Highlight, Secondary, Primary. With 5 painters, the first 5 in that list are always used. Painter subtypes are visible to all players.
+
+- Choose a loaded brush and a valid slot (within their subtype's area)
 - The brush's color is applied to that slot (the painter does not learn what color it is)
 - If the slot already has a color, the new stroke replaces it
 
@@ -174,6 +189,7 @@ At the end of each round, each Liaison receives an additional piece of unprompte
 - Which canvas slots have been painted and which are empty (no colors, no history)
 - Each player's remaining pigment uses
 - Each player's pigment self-assessment
+- Each painter's subtype (which zone or slot type they are restricted to)
 - Liaisons also know the scene type and one element each (no overlap)
 
 ### What Players Cannot See
@@ -189,29 +205,34 @@ At the end of each round, each Liaison receives an additional piece of unprompte
 At game start, each player receives one clue about pigment distribution. Clues are randomly assigned from the types below. They provide a starting point for deduction—ideally they narrow possibilities without giving certainty, though exact deduction from clues alone is not strictly prevented.
 
 **Neighbor Clues:**
+
 | Format | Example |
 |--------|---------|
-| One of your neighbors is [color] | "One of your neighbors is Yellow" |
+| At least one of your neighbors is [color] | "At least one of your neighbors is Yellow" |
 | Neither of your neighbors is [color] | "Neither of your neighbors is Blue" |
 
 **Distance Clues:**
+
 | Format | Example |
 |--------|---------|
-| Someone within 2 seats of you is [color] | "Someone within 2 seats of you is Blue" |
-| No one within 2 seats of you is [color] | "No one within 2 seats of you is Yellow" |
+| At least one person within 2 seats of you (not including you) is [color] | "At least one person within 2 seats of you (not including you) is Blue" |
+| No one within 2 seats of you (not including you) is [color] | "No one within 2 seats of you (not including you) is Yellow" |
 
 **Exclusion Clues:**
+
 | Format | Example |
 |--------|---------|
 | [X] is not [color] | "Alice is not Yellow" |
 
 **Color Potential Clues (about 3 players):**
+
 | Format | Example | Meaning |
 |--------|---------|---------|
 | [X], [Y], and [Z] can make [secondary] | "Alice, Bob, and Carol can make Purple" | At least one Red and one Blue among them |
 | [X], [Y], and [Z] cannot make [secondary] | "Alice, Bob, and Carol cannot make Green" | Missing at least one Yellow or one Blue |
 
 **Presence Clues (about 3-4 players):**
+
 | Format | Example |
 |--------|---------|
 | At least one of [X], [Y], [Z] is [color] | "At least one of Alice, Bob, Carol is Red" |

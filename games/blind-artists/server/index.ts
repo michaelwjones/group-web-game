@@ -14,7 +14,8 @@ import type {
     Color,
     SelfAssessmentAction
 } from './types.js';
-import { ZONES, SLOT_TYPES, COLOR_TO_PIGMENTS, createEmptySlotRecord } from './types.js';
+import { ZONES, SLOT_TYPES, PAINTER_SUBTYPES, COLOR_TO_PIGMENTS, createEmptySlotRecord } from './types.js';
+import type { PainterSubtype } from './types.js';
 import { generateValidGame } from './content.js';
 import { generateAllClues } from './clues.js';
 import { processLiaisonQuestion, generateFreebiesForLiaisons } from './feedback.js';
@@ -96,6 +97,13 @@ export const blindArtistsPlugin: GamePlugin<
             roles[players[i]] = shuffledRoles[i];
         }
 
+        // Assign painter subtypes in fixed priority order
+        const painterIds = players.filter(id => roles[id] === 'painter');
+        const painterSubtypes: Record<string, PainterSubtype> = {};
+        for (let i = 0; i < painterIds.length; i++) {
+            painterSubtypes[painterIds[i]] = PAINTER_SUBTYPES[i];
+        }
+
         // Build player names map, falling back to IDs if not provided
         const names: Record<string, string> = {};
         for (const playerId of players) {
@@ -109,17 +117,14 @@ export const blindArtistsPlugin: GamePlugin<
         const liaisonIds = players.filter(id => roles[id] === 'liaison');
         const liaisonKnowledge: Record<string, { zone: Zone; element: string }[]> = {};
 
-        // Each liaison gets 3 zones (one zone remains unknown to all)
+        // Each liaison gets 1 zone; 1 zone remains unknown to all
         const shuffledZones = shuffle([...ZONES]);
         for (let i = 0; i < liaisonIds.length; i++) {
             const liaisonId = liaisonIds[i];
-            // Give each liaison 3 zones, rotating which one is missing
-            const missingZoneIdx = i % 4;
-            const knownZones = shuffledZones.filter((_, idx) => idx !== missingZoneIdx);
-            liaisonKnowledge[liaisonId] = knownZones.map(zone => ({
-                zone,
-                element: elements[zone]
-            }));
+            liaisonKnowledge[liaisonId] = [{
+                zone: shuffledZones[i],
+                element: elements[shuffledZones[i]]
+            }];
         }
 
         // Initialize pigment uses
@@ -155,6 +160,7 @@ export const blindArtistsPlugin: GamePlugin<
             pigmentUsesRemaining,
             selfAssessments,
             roles,
+            painterSubtypes,
             seatingOrder,
             roundNumber: 0,
             totalRounds: config.totalRounds,
@@ -170,6 +176,10 @@ export const blindArtistsPlugin: GamePlugin<
                 role,
                 clue: clues[playerId]
             };
+
+            if (role === 'painter') {
+                privateState.painterSubtype = painterSubtypes[playerId];
+            }
 
             if (role === 'liaison') {
                 privateState.liaisonElements = liaisonKnowledge[playerId];
@@ -273,6 +283,19 @@ export const blindArtistsPlugin: GamePlugin<
                 }
                 if (!SLOT_TYPES.includes(slot)) {
                     return { valid: false, error: 'Invalid slot' };
+                }
+                // Check painter subtype constraint
+                const subtype = session.publicState.painterSubtypes[playerId];
+                if (subtype) {
+                    if (ZONES.includes(subtype as typeof ZONES[number])) {
+                        if (zone !== subtype) {
+                            return { valid: false, error: `Your subtype restricts you to the ${subtype} zone` };
+                        }
+                    } else {
+                        if (slot !== subtype) {
+                            return { valid: false, error: `Your subtype restricts you to ${subtype} slots` };
+                        }
+                    }
                 }
                 // Check slot is not claimed by another painter
                 const slotClaims = session.publicState.slotClaims as Record<string, { zone: Zone; slot: SlotType } | null>;

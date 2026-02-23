@@ -5,11 +5,13 @@ export type SlotType = 'primary' | 'secondary' | 'highlight' | 'shadow';
 export type Color = 'red' | 'yellow' | 'blue' | 'orange' | 'green' | 'purple';
 export type Pigment = 'red' | 'yellow' | 'blue';
 export type Role = 'fine-brush' | 'thick-brush' | 'painter' | 'liaison';
+export type PainterSubtype = Zone | SlotType;
 
 export const ZONES: Zone[] = ['back', 'mid', 'fore', 'focus'];
 export const SLOT_TYPES: SlotType[] = ['primary', 'secondary', 'highlight', 'shadow'];
 export const COLORS: Color[] = ['red', 'yellow', 'blue', 'orange', 'green', 'purple'];
 export const PIGMENTS: Pigment[] = ['red', 'yellow', 'blue'];
+export const PAINTER_SUBTYPES: PainterSubtype[] = ['back', 'mid', 'fore', 'focus', 'shadow', 'highlight', 'secondary', 'primary'];
 
 // Color mixing: which pigments combine to make each color
 export const COLOR_TO_PIGMENTS: Record<Color, Pigment[]> = {
@@ -40,6 +42,7 @@ export interface BlindArtistsPublic {
     pigmentUsesRemaining: Record<string, number>;
     selfAssessments: Record<string, Pigment | 'unknown'>;
     roles: Record<string, Role>;
+    painterSubtypes: Record<string, PainterSubtype>; // painter player ID -> subtype
     seatingOrder: string[];
     roundNumber: number;
     totalRounds: number;
@@ -51,6 +54,7 @@ export interface BlindArtistsPublic {
 export interface BlindArtistsPlayerPrivate {
     role: Role;
     clue: string;
+    painterSubtype?: PainterSubtype; // Painters only
     liaisonElements?: { zone: Zone; element: string }[]; // Liaisons only
     sceneType?: string; // Liaisons only: "Landscape"
     feedback?: string[]; // Liaison question answers (accumulates)
