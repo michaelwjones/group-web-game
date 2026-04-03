@@ -71,9 +71,10 @@ Every player has two things:
 | Role | Action per round |
 |------|------------------|
 | Fine Brush | Select 1 player → creates a primary color |
-| Thick Brush | Select 2 adjacent players → creates primary or secondary |
+| Thick Brush | Pair of 2 adjacent players; each selects 1 player → together create primary or secondary |
 | Painter | Select loaded brush + valid slot (per subtype) → paints 1 stroke |
-| Liaison | Ask the client 1 question → shares feedback verbally |
+| Liaison | Consult the client → shares what they learn verbally |
+| Critic | Examine the painting for correctness → shares what they observe verbally |
 
 ### Brushes
 
@@ -84,8 +85,9 @@ Brushes select players to create loaded brushes with colors. The resulting color
 - Can select any player, including themselves
 
 **Thick Brush:**
-- Select 2 players: any player + one of their direct neighbors
-- Can select themselves (as one of the two)
+- The role is held by 2 players who sit adjacent to each other
+- Each selects 1 player independently; the two selected pigments combine to create the loaded brush color
+- Each can select any player, including themselves
 
 **Pigment limits:**
 - Each player can only be selected 5 times total across the entire game
@@ -119,64 +121,32 @@ Subtypes are assigned from a fixed priority order: Back, Mid, Fore, Focus, Shado
 
 ### Liaisons
 
-Liaisons are the conduit between the players and the client. They receive feedback on their screen and share it with the group verbally—there is no in-app chat or text sharing.
+Liaisons are the conduit between the players and the client. They consult with the client each round and share what they learn verbally.
 
 **Starting knowledge:**
 - Know the scene type
-- Each Liaison learns one element of the painting (e.g., "The Back is Aurora")
+- Each Liaison learns one element of the painting
 - Liaisons learn different elements—no overlap among them
 
 **Each round:**
-- Choose a question category and receive feedback on their screen
-- Receive freebie feedback from the client
-- Share all feedback with the group in their own words, out loud
+- Make a choice that determines what they ask the client
+- Receive the client's response on their screen
+- Share what they learn with the group in their own words
 
-#### Question Menu
+*Specific mechanics TBD.*
 
-Each Liaison independently chooses a question category, makes any required sub-choices, and receives their own feedback.
+### Critic
 
-| Category | Player Chooses | Feedback | Example |
-|----------|----------------|----------|---------|
-| Locate | "zones" or "slots" | the worst one | "Mid" or "Primaries" |
-| Diagnose | a zone or slot type | which are wrong in that scope | "Primary, Shadow" |
-| Prescribe | nothing | color + (zone OR slot type) | "Blue in Mid" |
-| Validate | zone + slot | yes / no | "No" |
+The Critic reads the painting to assess how close it is to correct. They have no knowledge of the target—only of accuracy. They share what they observe verbally.
 
-**Locate** — Find where the biggest problems are.
-- Choose to ask about zones or slot types
-- Feedback: Names the zone (or slot type) with the most errors (ties broken randomly)
-- Example: "Which zone needs the most work?" → "Mid"
+**Starting knowledge:** None. The Critic begins with no element or scene knowledge.
 
-**Diagnose** — Deep dive into one area.
-- Choose a zone OR a slot type to investigate
-- Feedback: Lists which positions are incorrect within that scope
-- If everything in that scope is correct, says so
-- Example: "What's wrong in Mid?" → "Primary, Shadow" or "Nothing—it's perfect"
+**Each round:**
+- Make a choice that determines what aspect of the painting they examine
+- Receive correctness feedback on their screen (what is right/wrong, not what colors are present)
+- Share what they observe with the group in their own words
 
-**Prescribe** — Get a recommended action.
-- No player input required
-- Feedback: A color plus a partial location (zone OR slot type—game decides which)
-- If the painting is already perfect, says so
-- Example: "Blue in Mid" (but which of 4 slots?) or "Orange as a Primary" (but which of 4 zones?)
-- The vagueness is intentional—players combine with other info to pinpoint
-
-**Validate** — Confirm a specific theory.
-- Choose a specific slot (zone + slot type)
-- Feedback: Yes or No
-- Example: "Is Mid/Primary correct?" → "No"
-
-#### Freebie Feedback
-
-At the end of each round, each Liaison receives an additional piece of unprompted feedback from the client.
-
-- Each Liaison gets a different freebie
-- The game selects useful information, prioritizing:
-  - **Defensive**: Protect correct work from being painted over ("The Back is perfect")
-  - **Offensive**: Direct attention to problem areas ("Nothing is right about the Fore")
-- Phrased in client voice, e.g.:
-  - "I love the Primary in the Focus"
-  - "The Mid is almost there"
-  - "The Shadows need serious work"
+*Specific mechanics TBD.*
 
 ---
 
@@ -190,7 +160,8 @@ At the end of each round, each Liaison receives an additional piece of unprompte
 - Each player's remaining pigment uses
 - Each player's pigment self-assessment
 - Each painter's subtype (which zone or slot type they are restricted to)
-- Liaisons also know the scene type and one element each (no overlap)
+- Liaisons also know the scene type and the exact target colors for one element each (no overlap)
+- The Critic knows none of this—only what correctness feedback they accumulate through play
 
 ### What Players Cannot See
 
@@ -265,7 +236,7 @@ All players set their choices during the round. Choices are not locked on submis
 
 **Brushes:**
 - Fine Brushes select 1 player
-- Thick Brushes select 2 adjacent players
+- Each player in a Thick Brush pair selects 1 player independently
 - Multiple brushes can select the same player in the same round, as long as the player has not hit their lifetime limit of 5 uses (see Brushes section)
 
 **Painters:**
@@ -292,29 +263,28 @@ Players are arranged in a circle. The game needs to know the seating order becau
 
 ### Player Counts
 
-The game supports 12-18 players. Roles are assigned according to the table below.
+The game supports 14-18 players. Roles are assigned according to the table below. The Thick Brush Pairs column counts pairs—each pair is 2 adjacent players, so multiply by 2 for total players in that role.
 
-| Players | Fine Brush | Thick Brush | Painter | Liaison |
-|---------|------------|-------------|---------|---------|
-| 12 | 2 | 2 | 5 | 3 |
-| 13 | TBD | TBD | TBD | TBD |
-| 14 | TBD | TBD | TBD | TBD |
-| 15 | TBD | TBD | TBD | TBD |
-| 16 | TBD | TBD | TBD | TBD |
-| 17 | TBD | TBD | TBD | TBD |
-| 18 | TBD | TBD | TBD | TBD |
+| Players | Fine Brush | Thick Brush Pairs | Painter | Liaison | Critic |
+|---------|------------|-------------------|---------|---------|--------|
+| 14 | 2 | 2 | 5 | 2 | 1 |
+| 15 | TBD | TBD | TBD | TBD | TBD |
+| 16 | TBD | TBD | TBD | TBD | TBD |
+| 17 | TBD | TBD | TBD | TBD | TBD |
+| 18 | TBD | TBD | TBD | TBD | TBD |
 
-**12-player breakdown per round:**
-- 4 Brushes → 4 loaded brushes available
+**14-player breakdown per round:**
+- 2 Fine Brushes + 2 Thick Brush pairs → 4 loaded brushes available
 - 5 Painters → 5 strokes applied
-- 3 Liaisons → 3 questions asked, 3 freebies received
+- 2 Liaisons → 2 targeted questions asked
+- 1 Critic → 1 assessment action + 1 freebie
 
 **Over 5 rounds:**
 - 25 strokes total (16 slots + 9 corrections)
-- 15 questions + 15 freebies = 30 pieces of client feedback
+- 10 Liaison questions + 5 Critic assessments + 5 freebies = 20 pieces of client feedback
 
 **At game start:**
-- 3 Liaisons learn 3 different elements → 1 zone remains unknown to all
+- 2 Liaisons learn 2 different elements → 2 zones remain unknown to all
 
 ---
 

@@ -9,8 +9,7 @@ export default defineConfig({
 	},
 	resolve: {
 		alias: {
-			'@game/trivia': path.resolve(__dirname, '../../games/trivia'),
-			'@game/blind-artists': path.resolve(__dirname, '../../games/blind-artists')
+			'@game/trivia': path.resolve(__dirname, '../../games/trivia')
 		}
 	}
 });

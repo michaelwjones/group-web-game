@@ -43,14 +43,6 @@ async function start() {
         console.error('Failed to load trivia plugin:', err);
     }
 
-    try {
-        const { blindArtistsPlugin } = await import('@game/blind-artists/server');
-        gameManager.registerPlugin(blindArtistsPlugin);
-        console.log('Registered blind-artists plugin');
-    } catch (err) {
-        console.error('Failed to load blind-artists plugin:', err);
-    }
-
     // Cleanup stale games periodically
     setInterval(() => {
         gameManager.cleanupStaleGames();
